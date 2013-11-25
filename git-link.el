@@ -14,7 +14,7 @@
 
 (defvar git-link-remote-alist
   '(("github.com"    git-link-github)
-    ("bitbucket.com" git-link-bitbucket)
+    ("bitbucket.org" git-link-bitbucket)
     ("gitorious.org" git-link-gitorious))
   "Maps remote hostnames to a function capable of creating the appropriate URL")
 
@@ -45,6 +45,7 @@
   (git-link-chomp (git-link-exec (format "git config --get remote.%s.url" name))))
 
 (defun git-link-relative-filename ()
+  ;; TODO: if (buffer-file-name) is a sym link then this will break
   (let* ((filename (buffer-file-name))
          (dir      (git-link-repo-root)))
     (if (and dir buffer-file-name)
@@ -70,10 +71,20 @@
 		     (mapcar 'line-number-at-pos (list start end)))
 	    (format "L%s" start))))
 
-;; https://gitorious.org/USER/REPO/source/COMMIT-SHA:lib/DllAvCore.h#L6
-(defun git-link-gitorious ())
-; https://bitbucket.org/USER/REPO/src/933ffcd60cb600d3c39a8505623717d9e806b4e7/Gemfile?at=branch-name&#cl-13
-(defun git-link-bitbucket ())
+(defun git-link-gitorious (hostname dirname filename branch commit start end)
+  (format "https://gitorious.org/%s/source/%s:%s#L%s"
+	  dirname
+	  commit
+	  filename
+	  start))
+
+(defun git-link-bitbucket (hostname dirname filename branch commit start end)
+  ;; ?at=branch-name
+  (format "https://bitbucket.org/%s/src/%s/%s#cl-%s"
+	  dirname
+	  commit
+	  filename
+	  start))
 
 (defun git-link (&optional prompt?)
   "Create a URL representing the current buffer's location in its GitHub/Bitbucket/Gitorious/... 
