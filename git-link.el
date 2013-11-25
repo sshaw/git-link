@@ -1,11 +1,11 @@
-;;; git-link.el --- Create URLs to a buffer's location in its GitHub repository
+;;; git-link.el --- Create URLs to a buffer's location in its GitHub/Bitbucket/Gitorious/... repository
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
 ;; Version: 0.0.2
 
 ;;; Commentary:
 
-;; Create a URL representing the current buffer's location in its GitHub repository at
+;; Create a URL representing the current buffer's location in its GitHub/Bitbucket/... repository at
 ;; the current line number or active region. The URL will be added to the kill ring.
 ;;
 ;; With a prefix argument prompt for the remote's name. Defaults to "origin".
@@ -16,7 +16,7 @@
   '(("github.com"    git-link-github)
     ("bitbucket.com" git-link-bitbucket)
     ("gitorious.org" git-link-gitorious))
-  "Remote hostname to the symbol of function that will create the appropriate URL")
+  "Maps remote hostnames to a function capable of creating the appropriate URL")
 
 ;; Matches traditional URL and scp style
 ;; This probably wont work for git remotes that aren't services
@@ -76,8 +76,8 @@
 (defun git-link-bitbucket ())
 
 (defun git-link (&optional prompt?)
-  "Create a URL representing the current buffer's location in its GitHub/Bitbucket/... repository at
- the current line number or active region. The URL will be added to the kill ring.
+  "Create a URL representing the current buffer's location in its GitHub/Bitbucket/Gitorious/... 
+repository at  the current line number or active region. The URL will be added to the kill ring.
 
  With a prefix argument prompt for the remote's name. Defaults to \"origin\"."
 
@@ -96,7 +96,7 @@
     (cond ((null filename)
            (message "Buffer has no file"))
           ((null remote-host)
-           (message "Unknown remote %s" remote-name))
+           (message "Unknown remote '%s'" remote-name))
           ((and (null commit) (null branch))
            (message "Not on a branch, and repo does not have commits"))
           ;; functionp???
