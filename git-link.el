@@ -2,11 +2,25 @@
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
 ;; Version: 0.0.2
+;; URL: http://github.com/sshaw/git-link
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
-;; Create a URL representing the current buffer's location in its GitHub/Bitbucket/... repository at
-;; the current line number or active region. The URL will be added to the kill ring.
+;; Create a URL representing the current buffer's location in its GitHub/Bitbucket/Gitorious/... repository
+;; at the current line number or active region. The URL will be added to the kill ring.
 ;;
 ;; With a prefix argument prompt for the remote's name. Defaults to "origin".
 
@@ -67,8 +81,7 @@
 	  (or branch commit)
 	  filename
 	  (if (and start end)
-	      (apply 'format "L%s-L%s"
-		     (mapcar 'line-number-at-pos (list start end)))
+	      (format "L%s-L%s" start end)
 	    (format "L%s" start))))
 
 (defun git-link-gitorious (hostname dirname filename branch commit start end)
@@ -101,7 +114,7 @@ repository at  the current line number or active region. The URL will be added t
          (commit      (git-link-last-commit))
          (handler     (nth 1 (assoc remote-host git-link-remote-alist)))
          (lines       (if (region-active-p)		;; instead of mark-active?
-                          (list (region-beginning) (region-end))
+			  (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
                         (list (line-number-at-pos)))))
 
     (cond ((null filename)
@@ -123,3 +136,5 @@ repository at  the current line number or active region. The URL will be added t
                      commit
                      (nth 0 lines)
                      (nth 1 lines)))))))
+
+(provide 'git-link)
