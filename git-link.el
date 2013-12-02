@@ -4,6 +4,10 @@
 ;; Version: 0.0.2
 ;; URL: http://github.com/sshaw/git-link
 
+;; This file is NOT part of GNU Emacs.
+
+;;; License:
+
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -138,3 +142,4 @@ repository at  the current line number or active region. The URL will be added t
                      (nth 1 lines)))))))
 
 (provide 'git-link)
+;;; --- git-link.el ends here
