@@ -63,8 +63,7 @@
   (git-link-chomp (git-link-exec (format "git config --get remote.%s.url" name))))
 
 (defun git-link-relative-filename ()
-  ;; TODO: if (buffer-file-name) is a sym link then this will break
-  (let* ((filename (buffer-file-name))
+  (let* ((filename (file-truename (buffer-file-name)))
          (dir      (git-link-repo-root)))
     (if (and dir buffer-file-name)
         (substring filename (1+ (length dir))))))
