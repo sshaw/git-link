@@ -63,10 +63,11 @@
   (git-link-chomp (git-link-exec (format "git config --get remote.%s.url" name))))
 
 (defun git-link-relative-filename ()
-  (let* ((filename (file-truename (buffer-file-name)))
+  (let* ((filename (buffer-file-name))
          (dir      (git-link-repo-root)))
-    (if (and dir buffer-file-name)
-        (substring filename (1+ (length dir))))))
+    (if (and dir filename)
+        (substring (file-truename filename)
+		   (1+ (length dir))))))
 
 (defun git-link-remote-host (remote-name)
   (let ((url (git-link-remote-url remote-name)))
@@ -116,7 +117,7 @@ repository at  the current line number or active region. The URL will be added t
          (branch      (git-link-current-branch))
          (commit      (git-link-last-commit))
          (handler     (nth 1 (assoc remote-host git-link-remote-alist)))
-         (lines       (if (region-active-p)		;; instead of mark-active?
+         (lines       (if (region-active-p)            ;; instead of mark-active?
 			  (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
                         (list (line-number-at-pos)))))
 
