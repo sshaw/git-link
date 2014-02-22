@@ -1,4 +1,4 @@
-;;; git-link.el --- Create URLs to a buffer's location in its GitHub/Bitbucket/Gitorious/... repository
+;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
 ;; Version: 0.0.2
@@ -103,6 +103,7 @@
 	  filename
 	  start))
 
+;;;###autoload
 (defun git-link (&optional prompt)
   "Create a URL representing the current buffer's location in its
 GitHub/Bitbucket/Gitorious/... repository at the current line number
@@ -144,4 +145,4 @@ Defaults to \"origin\"."
 		     (nth 1 lines)))))))
 
 (provide 'git-link)
-;;; --- git-link.el ends here
+;;; git-link.el ends here
