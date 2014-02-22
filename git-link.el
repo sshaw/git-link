@@ -103,14 +103,16 @@
 	  filename
 	  start))
 
-(defun git-link (&optional prompt?)
-  "Create a URL representing the current buffer's location in its GitHub/Bitbucket/Gitorious/...
-repository at  the current line number or active region. The URL will be added to the kill ring.
+(defun git-link (&optional prompt)
+  "Create a URL representing the current buffer's location in its
+GitHub/Bitbucket/Gitorious/... repository at the current line number
+or active region. The URL will be added to the kill ring.
 
- With a prefix argument prompt for the remote's name. Defaults to \"origin\"."
+With a prefix argument prompt for the remote's name.
+Defaults to \"origin\"."
 
   (interactive "P")
-  (let* ((remote-name (if prompt? (read-string "Remote: " nil nil git-link-default-remote)
+  (let* ((remote-name (if prompt (read-string "Remote: " nil nil git-link-default-remote)
 			git-link-default-remote))
 	 (remote-host (git-link-remote-host remote-name))
 	 (filename    (git-link-relative-filename))
