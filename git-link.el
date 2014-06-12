@@ -46,7 +46,8 @@
     s))
 
 (defun git-link-exec (cmd)
-  (shell-command-to-string (format "%s 2>%s" cmd null-device)))
+  (let ((shell-file-name "/bin/sh"))
+    (shell-command-to-string (format "%s 2>%s" cmd null-device))))
 
 (defun git-link-last-commit ()
   (git-link-exec "git --no-pager log -n 1 --pretty=format:%H"))
