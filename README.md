@@ -3,11 +3,11 @@
 Interactive Emacs functions that create URLs for files and commits in
 GitHub/Bitbucket/Gitorious/... repositories. `git-link' returns the URL for the
 current buffer's file location at the current line number or active region.
-`git-commit-link' returns the URL for a commit. URLs are added to the kill ring.
+`git-link-commit' returns the URL for a commit. URLs are added to the kill ring.
 
 ## Usage
 
-`M-x git-link` and `M-x git-commit-link`
+`M-x git-link` and `M-x git-link-commit`
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
@@ -23,7 +23,7 @@ The default remote name is `"origin"`. This can be changed by setting `git-link-
 
 ### Building Links and Adding Services
 
-`git-link-remote-alist` and `git-commit-link-remote-alist` maps remotes'
+`git-link-remote-alist` and `git-link-commit-remote-alist` maps remotes'
 hostnames to a function capable of creating a URL on that host. To add (or
 modify) how URLs are created for a given host add the appropriate function
 objects to this lists.
@@ -40,7 +40,7 @@ The `git-link` signature is:
 * `START` starting line number
 * `END`  ending line number, `nil` unless region is active
 
-The `git-commit-link` signature is:
+The `git-link-commit` signature is:
 
 `HOSTNAME DIRNAME COMMIT`
 

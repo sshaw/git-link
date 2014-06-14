@@ -25,7 +25,7 @@
 
 ;; Create URLs for files and commits in GitHub/Bitbucket/Gitorious/...
 ;; repositories. `git-link' returns the URL for the current buffer's file
-;; location at the current line number or active region. `git-commit-link'
+;; location at the current line number or active region. `git-link-commit'
 ;; returns the URL for a commit. URLs are added to the kill ring.
 ;;
 ;; With a prefix argument prompt for the remote's name. Defaults to "origin".
@@ -38,10 +38,10 @@
     ("gitorious.org" git-link-gitorious))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
-(defvar git-commit-link-remote-alist
-  '(("github.com"    git-commit-link-github)
-    ("bitbucket.org" git-commit-link-bitbucket)
-    ("gitorious.org" git-commit-link-gitorious)
+(defvar git-link-commit-remote-alist
+  '(("github.com"    git-link-commit-github)
+    ("bitbucket.org" git-link-commit-bitbucket)
+    ("gitorious.org" git-link-commit-gitorious)
     )
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
@@ -88,6 +88,10 @@
     (if (string-match git-link-remote-regex url)
 	(match-string 2 url))))
 
+(defun git-link-get-remote (prompt)
+  (if prompt (read-string "Remote: " nil nil git-link-default-remote)
+    git-link-default-remote))
+
 (defun git-link-github (hostname dirname filename branch commit start end)
   (format "https://github.com/%s/tree/%s/%s#%s"
 	  dirname
@@ -97,7 +101,7 @@
 	      (format "L%s-L%s" start end)
 	    (format "L%s" start))))
 
-(defun git-commit-link-github (hostname dirname commit)
+(defun git-link-commit-github (hostname dirname commit)
   (format "https://github.com/%s/commit/%s"
 	  dirname
 	  commit))
@@ -109,7 +113,7 @@
 	  filename
 	  start))
 
-(defun git-commit-link-gitorious (hostname dirname commit)
+(defun git-link-commit-gitorious (hostname dirname commit)
   (format "https://gitorious.org/%s/commit/%s"
 	  dirname
 	  commit))
@@ -122,7 +126,7 @@
 	  filename
 	  start))
 
-(defun git-commit-link-bitbucket (hostname dirname commit)
+(defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
   (format "https://bitbucket.org/%s/commits/%s"
 	  dirname
@@ -138,8 +142,7 @@ With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
   (interactive "P")
-  (let* ((remote-name (if prompt (read-string "Remote: " nil nil git-link-default-remote)
-			git-link-default-remote))
+  (let* ((remote-name (git-link-get-remote prompt))
 	 (remote-host (git-link-remote-host remote-name))
 	 (filename    (git-link-relative-filename))
 	 (branch      (git-link-current-branch))
@@ -170,7 +173,7 @@ Defaults to \"origin\"."
 		     (nth 1 lines)))))))
 
 ;;;###autoload
-(defun git-commit-link (&optional prompt)
+(defun git-link-commit (&optional prompt)
   "Create a URL representing the commit for the hash under point
 in the current buffer's GitHub/Bitbucket/Gitorious/...
 repository. The URL will be added to the kill ring.
@@ -179,11 +182,10 @@ With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
   (interactive "P")
-  (let* ((remote-name (if prompt (read-string "Remote: " nil nil git-link-default-remote)
-			git-link-default-remote))
+  (let* ((remote-name (git-link-get-remote prompt))
 	 (remote-host (git-link-remote-host remote-name))
 	 (commit      (word-at-point))
-	 (handler     (nth 1 (assoc remote-host git-commit-link-remote-alist))))
+	 (handler     (nth 1 (assoc remote-host git-link-commit-remote-alist))))
 
     (cond ((null remote-host)
 	   (message "Unknown remote '%s'" remote-name))
