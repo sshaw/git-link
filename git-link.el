@@ -1,7 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.0.2
+;; Version: 0.1.0 (Unreleased)
+;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
 ;; This file is NOT part of GNU Emacs.
@@ -29,6 +30,15 @@
 ;; returns the URL for a commit. URLs are added to the kill ring.
 ;;
 ;; With a prefix argument prompt for the remote's name. Defaults to "origin".
+
+;;; Change Log:
+
+;; 2014-XX-XX - v0.1.0
+;; * Added git-link-commit (Thanks Ryan Barrett)
+;;
+;; 2014-02-27 - v0.0.2
+;; * Fix for buffers visiting files through symlinks (Bug #1, thanks Evgeniy Dolzhenko)
+
 
 (defvar git-link-default-remote "origin" "Name of the remote branch to link to")
 
