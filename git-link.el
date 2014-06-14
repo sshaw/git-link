@@ -189,7 +189,7 @@ Defaults to \"origin\"."
 
     (cond ((null remote-host)
 	   (message "Unknown remote '%s'" remote-name))
-	  ((not (string-match "[a-z0-9]\\{7,\\}" (or commit "")))
+	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
 	   (message "Point is not on a commit hash"))
 	  ;; functionp???
 	  ((null handler)
