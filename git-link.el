@@ -35,10 +35,14 @@
 
 ;; 2014-XX-XX - v0.1.0
 ;; * Added git-link-commit (Thanks Ryan Barrett)
+;; * Use call-process instead of shell-command-to-string
 ;;
 ;; 2014-02-27 - v0.0.2
 ;; * Fix for buffers visiting files through symlinks (Bug #1, thanks Evgeniy Dolzhenko)
 
+;;; Code:
+
+(require 'thingatpt)
 
 (defvar git-link-default-remote "origin" "Name of the remote branch to link to")
 
@@ -64,22 +68,25 @@
       (replace-match "" t t s)
     s))
 
-(defun git-link-exec (cmd)
-  (shell-command-to-string (format "%s 2>%s" cmd null-device)))
+(defun git-link-exec (&rest args)
+  (with-temp-buffer
+    ;; swallow stderr and return an empty string on failure
+    (apply 'call-process "git" nil (list (current-buffer) nil) nil args)
+    (buffer-string)))
 
 (defun git-link-last-commit ()
-  (git-link-exec "git --no-pager log -n 1 --pretty=format:%H"))
+  (git-link-exec "--no-pager" "log" "-n1" "--pretty=format:%H"))
 
 (defun git-link-current-branch ()
-  (let ((branch (git-link-exec "git symbolic-ref HEAD")))
+  (let ((branch (git-link-exec "symbolic-ref" "HEAD")))
       (if (string-match "/\\([^/]+?\\)$" branch)
 	  (match-string 1 branch))))
 
 (defun git-link-repo-root ()
-  (git-link-chomp (git-link-exec "git rev-parse --show-toplevel")))
+  (git-link-chomp (git-link-exec "rev-parse" "--show-toplevel")))
 
 (defun git-link-remote-url (name)
-  (git-link-chomp (git-link-exec (format "git config --get remote.%s.url" name))))
+  (git-link-chomp (git-link-exec "config" "--get" (format "remote.%s.url" name))))
 
 (defun git-link-relative-filename ()
   (let* ((filename (buffer-file-name))
