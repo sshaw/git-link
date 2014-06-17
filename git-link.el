@@ -35,6 +35,7 @@
 
 ;; 2014-XX-XX - v0.1.0
 ;; * Added git-link-commit (Thanks Ryan Barrett)
+;; * Added git-link-open-in-browser variable (Thanks Ryan Barrett)
 ;; * Use call-process instead of shell-command-to-string
 ;;
 ;; 2014-02-27 - v0.0.2
@@ -45,6 +46,8 @@
 (require 'thingatpt)
 
 (defvar git-link-default-remote "origin" "Name of the remote branch to link to")
+
+(defcustom git-link-open-in-browser nil "If non-nil, also open link in browser")
 
 (defvar git-link-remote-alist
   '(("github.com"    git-link-github)
@@ -149,6 +152,10 @@
 	  dirname
 	  commit))
 
+(defun git-link-new (link)
+  (kill-new link)
+  (if git-link-open-in-browser (browse-url link)))
+
 ;;;###autoload
 (defun git-link (&optional prompt)
   "Create a URL representing the current buffer's location in its
@@ -179,7 +186,7 @@ Defaults to \"origin\"."
 	  ((null handler)
 	   (message "No handler for %s" remote-host))
 	  ;; null ret val
-	  ((kill-new
+	  ((git-link-new
 	    (funcall handler
 		     remote-host
 		     (git-link-remote-dir remote-name)
@@ -212,7 +219,7 @@ Defaults to \"origin\"."
 	  ((null handler)
 	   (message "No handler for %s" remote-host))
 	  ;; null ret val
-	  ((kill-new
+	  ((git-link-new
 	    (funcall handler
 		     remote-host
 		     (git-link-remote-dir remote-name)
