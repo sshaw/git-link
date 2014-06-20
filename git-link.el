@@ -47,7 +47,7 @@
 
 (defvar git-link-default-remote "origin" "Name of the remote branch to link to")
 
-(defcustom git-link-open-in-browser nil "If non-nil, also open link in browser")
+(defvar git-link-open-in-browser nil "If non-nil, also open link in browser")
 
 (defvar git-link-remote-alist
   '(("github.com"    git-link-github)
