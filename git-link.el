@@ -81,9 +81,8 @@
   (git-link-exec "--no-pager" "log" "-n1" "--pretty=format:%H"))
 
 (defun git-link-current-branch ()
-  (let ((branch (git-link-exec "symbolic-ref" "HEAD")))
-      (if (string-match "/\\([^/]+?\\)$" branch)
-	  (match-string 1 branch))))
+  (git-link-chomp
+   (git-link-exec "symbolic-ref" "--short" "HEAD")))
 
 (defun git-link-repo-root ()
   (git-link-chomp (git-link-exec "rev-parse" "--show-toplevel")))
