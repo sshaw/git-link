@@ -47,3 +47,7 @@ The `git-link-commit` signature is:
 * `HOSTNAME` hostname of the remote
 * `DIRNAME` directory portion of the remote
 * `COMMIT` SHA of the commit
+
+### TODO
+
+* Consolidate `git-link-*-alist`s

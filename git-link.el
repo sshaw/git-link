@@ -37,6 +37,7 @@
 ;; * Added git-link-commit (Thanks Ryan Barrett)
 ;; * Added git-link-open-in-browser variable (Thanks Ryan Barrett)
 ;; * Use call-process instead of shell-command-to-string
+;; * Use --short option when calling symbolic-ref (Thanks Steven Huwig)
 ;;
 ;; 2014-02-27 - v0.0.2
 ;; * Fix for buffers visiting files through symlinks (Bug #1, thanks Evgeniy Dolzhenko)
@@ -81,8 +82,7 @@
   (git-link-exec "--no-pager" "log" "-n1" "--pretty=format:%H"))
 
 (defun git-link-current-branch ()
-  (git-link-chomp
-   (git-link-exec "symbolic-ref" "--short" "HEAD")))
+  (git-link-chomp (git-link-exec "symbolic-ref" "--short" "HEAD")))
 
 (defun git-link-repo-root ()
   (git-link-chomp (git-link-exec "rev-parse" "--show-toplevel")))
