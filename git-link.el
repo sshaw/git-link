@@ -33,7 +33,7 @@
 
 ;;; Change Log:
 
-;; 2014-XX-XX - v0.1.0
+;; 2015-02-05 - v0.1.0
 ;; * Added git-link-commit (Thanks Ryan Barrett)
 ;; * Added git-link-open-in-browser variable (Thanks Ryan Barrett)
 ;; * Use call-process instead of shell-command-to-string

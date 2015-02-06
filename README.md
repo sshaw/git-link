@@ -11,7 +11,7 @@ current buffer's file location at the current line number or active region.
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
-The variable git-link-open-in-browser, if set to non-nil, can cause
+The variable git-link-open-in-browser, if set to non-nil, will cause
 both git-link and git-link-commit to call browse-url on the resulting
 link.
 
@@ -27,7 +27,7 @@ The default remote name is `"origin"`. This can be changed by setting `git-link-
 
 ### Building Links and Adding Services
 
-`git-link-remote-alist` and `git-link-commit-remote-alist` maps remotes'
+`git-link-remote-alist` and `git-link-commit-remote-alist` map remotes'
 hostnames to a function capable of creating a URL on that host. To add (or
 modify) how URLs are created for a given host add the appropriate function
 objects to this lists.
@@ -55,3 +55,4 @@ The `git-link-commit` signature is:
 ### TODO
 
 * Consolidate `git-link-*-alist`s
+* `git-link-grep`
