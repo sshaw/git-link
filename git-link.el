@@ -92,20 +92,20 @@
 
 (defun git-link-relative-filename ()
   (let* ((filename (buffer-file-name))
-	 (dir      (git-link-repo-root)))
+         (dir      (git-link-repo-root)))
     (if (and dir filename)
-	(substring (file-truename filename)
-		   (1+ (length dir))))))
+        (substring (file-truename filename)
+                   (1+ (length dir))))))
 
 (defun git-link-remote-host (remote-name)
   (let ((url (git-link-remote-url remote-name)))
     (if (string-match git-link-remote-regex url)
-	(match-string 1 url))))
+        (match-string 1 url))))
 
 (defun git-link-remote-dir (remote-name)
   (let ((url (git-link-remote-url remote-name)))
     (if (string-match git-link-remote-regex url)
-	(match-string 2 url))))
+        (match-string 2 url))))
 
 (defun git-link-get-remote (prompt)
   (if prompt (read-string "Remote: " nil nil git-link-default-remote)
@@ -113,43 +113,43 @@
 
 (defun git-link-github (hostname dirname filename branch commit start end)
   (format "https://github.com/%s/tree/%s/%s#%s"
-	  dirname
-	  (or branch commit)
-	  filename
-	  (if (and start end)
-	      (format "L%s-L%s" start end)
-	    (format "L%s" start))))
+          dirname
+          (or branch commit)
+          filename
+          (if (and start end)
+              (format "L%s-L%s" start end)
+            (format "L%s" start))))
 
 (defun git-link-commit-github (hostname dirname commit)
   (format "https://github.com/%s/commit/%s"
-	  dirname
-	  commit))
+          dirname
+          commit))
 
 (defun git-link-gitorious (hostname dirname filename branch commit start end)
   (format "https://gitorious.org/%s/source/%s:%s#L%s"
-	  dirname
-	  commit
-	  filename
-	  start))
+          dirname
+          commit
+          filename
+          start))
 
 (defun git-link-commit-gitorious (hostname dirname commit)
   (format "https://gitorious.org/%s/commit/%s"
-	  dirname
-	  commit))
+          dirname
+          commit))
 
 (defun git-link-bitbucket (hostname dirname filename branch commit start end)
   ;; ?at=branch-name
   (format "https://bitbucket.org/%s/src/%s/%s#cl-%s"
-	  dirname
-	  commit
-	  filename
-	  start))
+          dirname
+          commit
+          filename
+          start))
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
   (format "https://bitbucket.org/%s/commits/%s"
-	  dirname
-	  commit))
+          dirname
+          commit))
 
 (defun git-link-new (link)
   (message (kill-new link))
@@ -167,34 +167,34 @@ Defaults to \"origin\"."
 
   (interactive "P")
   (let* ((remote-name (git-link-get-remote prompt))
-	 (remote-host (git-link-remote-host remote-name))
-	 (filename    (git-link-relative-filename))
-	 (branch      (git-link-current-branch))
-	 (commit      (git-link-last-commit))
-	 (handler     (nth 1 (assoc remote-host git-link-remote-alist)))
-	 (lines       (if (and transient-mark-mode mark-active)           ;; change to use-region-p (>= 23)
-			  (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
-			(list (line-number-at-pos)))))
+         (remote-host (git-link-remote-host remote-name))
+         (filename    (git-link-relative-filename))
+         (branch      (git-link-current-branch))
+         (commit      (git-link-last-commit))
+         (handler     (nth 1 (assoc remote-host git-link-remote-alist)))
+         (lines       (if (and transient-mark-mode mark-active)           ;; change to use-region-p (>= 23)
+                          (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
+                        (list (line-number-at-pos)))))
 
     (cond ((null filename)
-	   (message "Buffer has no file"))
-	  ((null remote-host)
-	   (message "Unknown remote '%s'" remote-name))
-	  ((and (null commit) (null branch))
-	   (message "Not on a branch, and repo does not have commits"))
-	  ;; functionp???
-	  ((null handler)
-	   (message "No handler for %s" remote-host))
-	  ;; null ret val
-	  ((git-link-new
-	    (funcall handler
-		     remote-host
-		     (git-link-remote-dir remote-name)
-		     filename
-		     branch
-		     commit
-		     (nth 0 lines)
-		     (nth 1 lines)))))))
+           (message "Buffer has no file"))
+          ((null remote-host)
+           (message "Unknown remote '%s'" remote-name))
+          ((and (null commit) (null branch))
+           (message "Not on a branch, and repo does not have commits"))
+          ;; functionp???
+          ((null handler)
+           (message "No handler for %s" remote-host))
+          ;; null ret val
+          ((git-link-new
+            (funcall handler
+                     remote-host
+                     (git-link-remote-dir remote-name)
+                     filename
+                     branch
+                     commit
+                     (nth 0 lines)
+                     (nth 1 lines)))))))
 
 ;;;###autoload
 (defun git-link-commit (&optional prompt)
@@ -207,23 +207,23 @@ Defaults to \"origin\"."
 
   (interactive "P")
   (let* ((remote-name (git-link-get-remote prompt))
-	 (remote-host (git-link-remote-host remote-name))
-	 (commit      (word-at-point))
-	 (handler     (nth 1 (assoc remote-host git-link-commit-remote-alist))))
+         (remote-host (git-link-remote-host remote-name))
+         (commit      (word-at-point))
+         (handler     (nth 1 (assoc remote-host git-link-commit-remote-alist))))
 
     (cond ((null remote-host)
-	   (message "Unknown remote '%s'" remote-name))
-	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
-	   (message "Point is not on a commit hash"))
-	  ;; functionp???
-	  ((null handler)
-	   (message "No handler for %s" remote-host))
-	  ;; null ret val
-	  ((git-link-new
-	    (funcall handler
-		     remote-host
-		     (git-link-remote-dir remote-name)
-		     commit))))))
+           (message "Unknown remote '%s'" remote-name))
+          ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
+           (message "Point is not on a commit hash"))
+          ;; functionp???
+          ((null handler)
+           (message "No handler for %s" remote-host))
+          ;; null ret val
+          ((git-link-new
+            (funcall handler
+                     remote-host
+                     (git-link-remote-dir remote-name)
+                     commit))))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
