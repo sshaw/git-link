@@ -152,8 +152,9 @@
 	  commit))
 
 (defun git-link-new (link)
-  (kill-new link)
-  (if git-link-open-in-browser (browse-url link)))
+  (message (kill-new link))
+  (when git-link-open-in-browser
+    (browse-url link)))
 
 ;;;###autoload
 (defun git-link (&optional prompt)
