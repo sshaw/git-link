@@ -59,8 +59,7 @@
 (defvar git-link-commit-remote-alist
   '(("github.com"    git-link-commit-github)
     ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious)
-    )
+    ("gitorious.org" git-link-commit-gitorious))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
@@ -105,10 +104,24 @@
 (defun git-link-remote-dir (remote-name)
   (let ((url (git-link-remote-url remote-name)))
     (if (string-match git-link-remote-regex url)
-	(match-string 2 url))))
+        (match-string 2 url))))
 
-(defun git-link-get-remote (prompt)
-  (if prompt (read-string "Remote: " nil nil git-link-default-remote)
+(defun git-link-remotes ()
+  "Returns the list of remotes for this repository"
+  (process-lines "git" "remote"))
+
+(defun git-link-read-remote (prefix)
+  (if prefix
+      (let ((remotes (git-link-remotes)))
+        (completing-read "Remote: "
+                         remotes
+                         nil
+                         t
+                         ""
+                         nil
+                         (if (member git-link-default-remote remotes)
+                             git-link-default-remote
+                           (car remotes))))
     git-link-default-remote))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
@@ -156,24 +169,23 @@
   (if git-link-open-in-browser (browse-url link)))
 
 ;;;###autoload
-(defun git-link (&optional prompt)
+(defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
 GitHub/Bitbucket/Gitorious/... repository at the current line number
 or active region. The URL will be added to the kill ring.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
-
-  (interactive "P")
-  (let* ((remote-name (git-link-get-remote prompt))
-	 (remote-host (git-link-remote-host remote-name))
+  (interactive (let* ((remote (git-link-read-remote current-prefix-arg))
+                      (use-region (use-region-p))
+                      (start (line-number-at-pos (when use-region (region-beginning))))
+                      (end (when use-region (line-number-at-pos (region-end)))))
+                 (list remote start end)))
+  (let* ((remote-host (git-link-remote-host remote))
 	 (filename    (git-link-relative-filename))
 	 (branch      (git-link-current-branch))
 	 (commit      (git-link-last-commit))
-	 (handler     (nth 1 (assoc remote-host git-link-remote-alist)))
-	 (lines       (if (and transient-mark-mode mark-active)           ;; change to use-region-p (>= 23)
-			  (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
-			(list (line-number-at-pos)))))
+	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
 
     (cond ((null filename)
 	   (message "Buffer has no file"))
@@ -188,15 +200,15 @@ Defaults to \"origin\"."
 	  ((git-link-new
 	    (funcall handler
 		     remote-host
-		     (git-link-remote-dir remote-name)
+		     (git-link-remote-dir remote)
 		     filename
 		     branch
 		     commit
-		     (nth 0 lines)
-		     (nth 1 lines)))))))
+		     start
+		     end))))))
 
 ;;;###autoload
-(defun git-link-commit (&optional prompt)
+(defun git-link-commit (remote)
   "Create a URL representing the commit for the hash under point
 in the current buffer's GitHub/Bitbucket/Gitorious/...
 repository. The URL will be added to the kill ring.
@@ -204,11 +216,10 @@ repository. The URL will be added to the kill ring.
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
-  (interactive "P")
-  (let* ((remote-name (git-link-get-remote prompt))
-	 (remote-host (git-link-remote-host remote-name))
+  (interactive (list (git-link-read-remote current-prefix-arg)))
+  (let* ((remote-host (git-link-remote-host remote))
 	 (commit      (word-at-point))
-	 (handler     (nth 1 (assoc remote-host git-link-commit-remote-alist))))
+	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
 
     (cond ((null remote-host)
 	   (message "Unknown remote '%s'" remote-name))
@@ -221,7 +232,7 @@ Defaults to \"origin\"."
 	  ((git-link-new
 	    (funcall handler
 		     remote-host
-		     (git-link-remote-dir remote-name)
+		     (git-link-remote-dir remote)
 		     commit))))))
 
 (provide 'git-link)
