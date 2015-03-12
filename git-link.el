@@ -175,14 +175,13 @@ Defaults to \"origin\"."
          (lines       (if (and transient-mark-mode mark-active)           ;; change to use-region-p (>= 23)
                           (mapcar 'line-number-at-pos (list (region-beginning) (region-end)))
                         (list (line-number-at-pos)))))
-
     (cond ((null filename)
            (message "Buffer has no file"))
           ((null remote-host)
            (message "Unknown remote '%s'" remote-name))
           ((and (null commit) (null branch))
            (message "Not on a branch, and repo does not have commits"))
-          ((null (symbol-function handler))
+          ((functionp 'handler)
            (message "No handler for %s" remote-host))
           ;; null ret val
           (t (git-link-new
@@ -215,7 +214,7 @@ Defaults to \"origin\"."
           ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
            (message "Point is not on a commit hash"))
           ;; functionp???
-          ((null handler)
+          ((function 'handler)
            (message "No handler for %s" remote-host))
           ;; null ret val
           (t (git-link-new
