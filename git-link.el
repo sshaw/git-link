@@ -181,7 +181,7 @@ Defaults to \"origin\"."
            (message "Unknown remote '%s'" remote-name))
           ((and (null commit) (null branch))
            (message "Not on a branch, and repo does not have commits"))
-          ((functionp 'handler)
+          ((not (functionp handler))
            (message "No handler for %s" remote-host))
           ;; null ret val
           (t (git-link-new
@@ -213,8 +213,7 @@ Defaults to \"origin\"."
            (message "Unknown remote '%s'" remote-name))
           ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
            (message "Point is not on a commit hash"))
-          ;; functionp???
-          ((function 'handler)
+          ((not (functionp handler))
            (message "No handler for %s" remote-host))
           ;; null ret val
           (t (git-link-new
