@@ -32,6 +32,18 @@ hostnames to a function capable of creating a URL on that host. To add (or
 modify) how URLs are created for a given host add the appropriate function
 objects to this lists.
 
+If you use a self-hosted version of one of the supported services, you
+can configure the link function alists for the hostname at which that
+service is hosted.  For example, for a GitHub Enterprise instance at
+`github.example.com`, you could add the following to your `.emacs` file.
+
+    (with-eval-after-load "git-link"
+      (progn
+	(add-to-list 'git-link-remote-alist
+	  '("github.example.com" git-link-github))
+	(add-to-list 'git-link-commit-remote-alist
+	  '("github.example.com" git-link-commit-github))))
+
 The `git-link` signature is:
 
 `HOSTNAME DIRNAME FILENAME BRANCH COMMIT START END`
