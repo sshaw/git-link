@@ -37,12 +37,12 @@ can configure the link function alists for the hostname at which that
 service is hosted.  For example, for a GitHub Enterprise instance at
 `github.example.com`, you could add the following to your `.emacs` file.
 
-    (with-eval-after-load "git-link"
-      (progn
-	(add-to-list 'git-link-remote-alist
-	  '("github.example.com" git-link-github))
-	(add-to-list 'git-link-commit-remote-alist
-	  '("github.example.com" git-link-commit-github))))
+    (eval-after-load "git-link"
+      '(progn
+        (add-to-list 'git-link-remote-alist
+          '("github.example.com" git-link-github))
+        (add-to-list 'git-link-commit-remote-alist
+          '("github.example.com" git-link-commit-github))))
 
 The `git-link` signature is:
 
