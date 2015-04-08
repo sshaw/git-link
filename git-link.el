@@ -134,7 +134,8 @@
          (when use-region (line-number-at-pos (region-end))))))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
-  (format "https://github.com/%s/tree/%s/%s#%s"
+  (format "https://%s/%s/tree/%s/%s#%s"
+	  hostname
 	  dirname
 	  (or branch commit)
 	  filename
@@ -143,25 +144,29 @@
 	    (format "L%s" start))))
 
 (defun git-link-commit-github (hostname dirname commit)
-  (format "https://github.com/%s/commit/%s"
+  (format "https://%s/%s/commit/%s"
+	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-gitorious (hostname dirname filename branch commit start end)
-  (format "https://gitorious.org/%s/source/%s:%s#L%s"
+  (format "https://%s/%s/source/%s:%s#L%s"
+	  hostname
 	  dirname
 	  commit
 	  filename
 	  start))
 
 (defun git-link-commit-gitorious (hostname dirname commit)
-  (format "https://gitorious.org/%s/commit/%s"
+  (format "https://%s/%s/commit/%s"
+	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-bitbucket (hostname dirname filename branch commit start end)
   ;; ?at=branch-name
-  (format "https://bitbucket.org/%s/src/%s/%s#cl-%s"
+  (format "https://%s/%s/src/%s/%s#cl-%s"
+	  hostname
 	  dirname
 	  commit
 	  filename
@@ -169,7 +174,8 @@
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
-  (format "https://bitbucket.org/%s/commits/%s"
+  (format "https://%s/%s/commits/%s"
+	  hostname
 	  dirname
 	  commit))
 
