@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.1.0 (Unreleased)
+;; Version: 0.1.0
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
