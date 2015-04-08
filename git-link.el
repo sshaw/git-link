@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.1.0
+;; Version: 0.2.0 (Unreleased)
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,6 +33,12 @@
 
 ;;; Change Log:
 
+;; 2015-XX-XX - v0.2.0
+;; * Use completing-read when prompting for remotes (Thanks Andrew Gwozdziewycz)
+;; * Display URL in mini buffer when adding to kill ring (Thanks Andrew Gwozdziewycz)
+;; * Fix for narrow-to-region (Thanks Andrew Gwozdziewycz)
+;; * Fix to use remote hostname when constructing link URLs (Thanks David Hull)
+;;
 ;; 2015-02-05 - v0.1.0
 ;; * Added git-link-commit (Thanks Ryan Barrett)
 ;; * Added git-link-open-in-browser variable (Thanks Ryan Barrett)
@@ -180,8 +186,9 @@
 	  commit))
 
 (defun git-link-new (link)
-  (kill-new link)
-  (if git-link-open-in-browser (browse-url link)))
+  (message (kill-new link))
+  (when git-link-open-in-browser 
+    (browse-url link)))
 
 ;;;###autoload
 (defun git-link (remote start end)
@@ -208,8 +215,7 @@ Defaults to \"origin\"."
 	   (message "Unknown remote '%s'" remote))
 	  ((and (null commit) (null branch))
 	   (message "Not on a branch, and repo does not have commits"))
-	  ;; functionp???
-	  ((null handler)
+	  ((not (functionp handler))
 	   (message "No handler for %s" remote-host))
 	  ;; null ret val
 	  ((git-link-new
@@ -241,8 +247,7 @@ Defaults to \"origin\"."
 	   (message "Unknown remote '%s'" remote))
 	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
 	   (message "Point is not on a commit hash"))
-	  ;; functionp???
-	  ((null handler)
+	  ((not (functionp handler))
 	   (message "No handler for %s" remote-host))
 	  ;; null ret val
 	  ((git-link-new
