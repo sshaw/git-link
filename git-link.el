@@ -195,6 +195,7 @@
 
 (defun git-link-new (link)
   (message (kill-new link))
+  (setq deactivate-mark t)
   (when git-link-open-in-browser
     (browse-url link)))
 
