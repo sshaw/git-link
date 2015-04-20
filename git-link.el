@@ -68,6 +68,9 @@
     ("gitorious.org" git-link-commit-gitorious))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
+(defvar git-link-use-commit nil
+  "Use the commit name in link even if branch name is available.")
+
 ;; Matches traditional URL and scp style
 ;; This probably wont work for git remotes that aren't services
 (defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
@@ -143,7 +146,9 @@
   (format "https://%s/%s/tree/%s/%s#%s"
 	  hostname
 	  dirname
-	  (or branch commit)
+          (if git-link-use-commit
+              commit
+            (or branch commit))
 	  filename
 	  (if (and start end)
 	      (format "L%s-L%s" start end)
@@ -187,7 +192,7 @@
 
 (defun git-link-new (link)
   (message (kill-new link))
-  (when git-link-open-in-browser 
+  (when git-link-open-in-browser
     (browse-url link)))
 
 ;;;###autoload
