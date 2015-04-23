@@ -11,13 +11,19 @@ current buffer's file location at the current line number or active region.
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
-The variable git-link-open-in-browser, if set to non-nil, will cause
-both git-link and git-link-commit to call browse-url on the resulting
-link.
+### Settings
 
-### Default remote
+#### `git-link-default-remote`
 
-The default remote name is `"origin"`. This can be changed by setting `git-link-default-remote`.
+Name of the remote branch to link to, defaults to `"origin"`.
+
+#### `git-link-open-in-browser`
+
+If non-`nil` also open link in browser via `browse-url`, defaults to `nil`.
+
+#### `git-link-use-commit`
+
+If non-`nil` use the latest commit's hash in the link instead of the branch name, defaults to `nil`.
 
 ### Supported Services
 

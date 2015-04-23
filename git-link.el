@@ -36,6 +36,7 @@
 ;; 2015-XX-XX - v0.2.0
 ;; * Use completing-read when prompting for remotes (Thanks Andrew Gwozdziewycz)
 ;; * Display URL in mini buffer when adding to kill ring (Thanks Andrew Gwozdziewycz)
+;; * Added git-link-use-commit variable (Thanks Kaushal Modi)
 ;; * Fix for narrow-to-region (Thanks Andrew Gwozdziewycz)
 ;; * Fix to use remote hostname when constructing link URLs (Thanks David Hull)
 ;;
@@ -52,9 +53,14 @@
 
 (require 'thingatpt)
 
-(defvar git-link-default-remote "origin" "Name of the remote branch to link to")
+(defvar git-link-default-remote "origin"
+  "Name of the remote branch to link to.")
 
-(defvar git-link-open-in-browser nil "If non-nil, also open link in browser")
+(defvar git-link-open-in-browser nil
+  "If non-nil also open link in browser via `browse-url'.")
+
+(defvar git-link-use-commit nil
+  "If non-nil use the latest commit's hash in the link instead of the branch name.")
 
 (defvar git-link-remote-alist
   '(("github.com"    git-link-github)
@@ -67,9 +73,6 @@
     ("bitbucket.org" git-link-commit-bitbucket)
     ("gitorious.org" git-link-commit-gitorious))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
-
-(defvar git-link-use-commit nil
-  "Use the commit name in link even if branch name is available.")
 
 ;; Matches traditional URL and scp style
 ;; This probably wont work for git remotes that aren't services
