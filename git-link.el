@@ -146,9 +146,7 @@
   (format "https://%s/%s/tree/%s/%s#%s"
 	  hostname
 	  dirname
-          (if git-link-use-commit
-              commit
-            (or branch commit))
+	  (or branch commit)
 	  filename
 	  (if (and start end)
 	      (format "L%s-L%s" start end)
@@ -228,7 +226,7 @@ Defaults to \"origin\"."
 		     remote-host
 		     (git-link-remote-dir remote)
 		     filename
-		     branch
+		     (if git-link-use-commit nil branch)
 		     commit
 		     start
 		     end))))))
