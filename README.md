@@ -1,9 +1,10 @@
 # git-link
 
 Interactive Emacs functions that create URLs for files and commits in
-GitHub/Bitbucket/Gitorious/... repositories. `git-link` returns the URL for the
-current buffer's file location at the current line number or active region.
-`git-link-commit` returns the URL for a commit. URLs are added to the kill ring.
+GitHub/Bitbucket/Gitorious/GitLab/... repositories. `git-link` returns the URL
+for the current buffer's file location at the current line number or active
+region.  `git-link-commit` returns the URL for a commit. URLs are added to the
+kill ring.
 
 ## Usage
 
@@ -30,6 +31,7 @@ If non-`nil` use the latest commit's hash in the link instead of the branch name
 * [Bitbucket](http://bitbucket.com)
 * [GitHub](http://github.com)
 * [Gitorious](http://gitorious.org)
+* [GitLab](https://gitlab.com)
 
 ### Building Links and Adding Services
 
