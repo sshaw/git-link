@@ -65,13 +65,15 @@
 (defvar git-link-remote-alist
   '(("github.com"    git-link-github)
     ("bitbucket.org" git-link-bitbucket)
-    ("gitorious.org" git-link-gitorious))
+    ("gitorious.org" git-link-gitorious)
+    ("gitlab.com"    git-link-github))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
   '(("github.com"    git-link-commit-github)
     ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious))
+    ("gitorious.org" git-link-commit-gitorious)
+    ("gitlab.com"    git-link-commit-github))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
@@ -146,7 +148,7 @@
          (when use-region (line-number-at-pos (region-end))))))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/tree/%s/%s#%s"
+  (format "https://%s/%s/blob/%s/%s#%s"
 	  hostname
 	  dirname
 	  (or branch commit)
