@@ -142,10 +142,26 @@
   (save-restriction
     (widen)
     (save-excursion
-      (let ((use-region (use-region-p)))
-        (list
-         (line-number-at-pos (when use-region (region-beginning)))
-         (when use-region (line-number-at-pos (region-end))))))))
+      (let* ((use-region (use-region-p))
+             (start (when use-region (region-beginning)))
+             (end   (when use-region (region-end)))
+             (line-start (line-number-at-pos start))
+             line-end)
+        (when use-region
+          ;; When region is selected from bottom to top, exchange point and mark
+          ;; so that the `point' and `(region-end)' are the same
+          (when (< (point) (mark))
+            (exchange-point-and-mark))
+          ;; If the `end' position is at the beginning of a line
+          ;; decrement the position by 1, so that the resultant
+          ;; position is on the previous line.
+          (when (= end (line-beginning-position))
+            (setq end (1- end)))
+          (setq line-end (line-number-at-pos end))
+          ;; Set the `line-end' to `nil' if `line-end' <= `line-start'
+          (when (<= line-end line-start)
+            (setq line-end nil)))
+        (list line-start line-end)))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
   (format "https://%s/%s/blob/%s/%s#%s"
@@ -195,6 +211,7 @@
 
 (defun git-link-new (link)
   (message (kill-new link))
+  (setq deactivate-mark t)
   (when git-link-open-in-browser
     (browse-url link)))
 
