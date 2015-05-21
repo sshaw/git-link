@@ -34,10 +34,13 @@
 ;;; Change Log:
 
 ;; 2015-XX-XX - v0.2.0
+;; * Deactivate mark after killing the link (Thanks Kaushal Modi)
+;; * Support for GitLab (Thanks Swaroop C H)
 ;; * Use completing-read when prompting for remotes (Thanks Andrew Gwozdziewycz)
-;; * Display URL in mini buffer when adding to kill ring (Thanks Andrew Gwozdziewycz)
+;; * Display URL in minibuffer when adding to kill ring (Thanks Andrew Gwozdziewycz)
 ;; * Added git-link-use-commit variable (Thanks Kaushal Modi)
-;; * Fix for narrow-to-region (Thanks Andrew Gwozdziewycz)
+;; * Fix to ignore point at beginning of line in regions (Thanks Kaushal Modi)
+;; * Fix for narrow-to-region (Bug #10, thanks Andrew Gwozdziewycz)
 ;; * Fix to use remote hostname when constructing link URLs (Thanks David Hull)
 ;;
 ;; 2015-02-05 - v0.1.0
@@ -158,7 +161,6 @@
           (when (= end (line-beginning-position))
             (setq end (1- end)))
           (setq line-end (line-number-at-pos end))
-          ;; Set the `line-end' to `nil' if `line-end' <= `line-start'
           (when (<= line-end line-start)
             (setq line-end nil)))
         (list line-start line-end)))))
