@@ -212,7 +212,8 @@
 	  commit))
 
 (defun git-link-new (link)
-  (message (kill-new link))
+  (kill-new link)
+  (message link)
   (setq deactivate-mark t)
   (when git-link-open-in-browser
     (browse-url link)))
