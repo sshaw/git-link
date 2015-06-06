@@ -72,6 +72,18 @@ The `git-link-commit` signature is:
 * `DIRNAME` directory portion of the remote
 * `COMMIT` SHA of the commit
 
+If you use Gerrit with replication enabled to a supported service,
+you can redirect by adding the following to your `.emacs` file.
+
+    (eval-after-load "git-link"
+      '(progn
+        (add-to-list 'git-link-remote-host-alist
+          '("gerrit.example.com" "gitlab.example.com/org-name"))
+        (add-to-list 'git-link-remote-alist
+          '("gitlab.example.com/org-name" git-link-github))
+        (add-to-list 'git-link-commit-remote-alist
+          '("gitlab.example.com/org-name" git-link-commit-github))))
+
 ### TODO
 
 * Consolidate `git-link-*-alist`s

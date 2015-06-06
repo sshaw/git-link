@@ -56,6 +56,7 @@
 ;;; Code:
 
 (require 'thingatpt)
+(require 'url-parse)
 
 (defvar git-link-default-remote "origin"
   "Name of the remote branch to link to.")
@@ -80,9 +81,9 @@
     ("gitlab.com"    git-link-commit-github))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
-;; Matches traditional URL and scp style
-;; This probably wont work for git remotes that aren't services
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
+(defvar git-link-remote-host-alist
+  nil
+  "Maps git remote hostnames to a link hostname.")
 
 (defun git-link-chomp (s)
   (if (string-match "\\(\r?\n\\)+$" s)
@@ -115,14 +116,14 @@
 		   (1+ (length dir))))))
 
 (defun git-link-remote-host (remote-name)
-  (let ((url (git-link-remote-url remote-name)))
-    (if (string-match git-link-remote-regex url)
-	(match-string 1 url))))
+  (let ((url (url-generic-parse-url (git-link-remote-url remote-name))))
+    (let ((host (url-host url)))
+      (or (cadr (assoc host git-link-remote-host-alist))
+          host))))
 
 (defun git-link-remote-dir (remote-name)
-  (let ((url (git-link-remote-url remote-name)))
-    (if (string-match git-link-remote-regex url)
-        (match-string 2 url))))
+  (let ((url (url-generic-parse-url (git-link-remote-url remote-name))))
+    (substring (file-name-sans-extension (url-filename url)) 1)))
 
 (defun git-link-remotes ()
   "Returns the list of remotes for this repository, or nil on error"
