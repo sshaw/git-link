@@ -198,11 +198,12 @@
 
 (defun git-link-bitbucket (hostname dirname filename branch commit start end)
   ;; ?at=branch-name
-  (format "https://%s/%s/src/%s/%s#cl-%s"
+  (format "https://%s/%s/src/%s/%s#%s-%s"
 	  hostname
 	  dirname
 	  commit
 	  filename
+	  (file-name-nondirectory filename)
 	  start))
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
