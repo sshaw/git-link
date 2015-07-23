@@ -176,7 +176,7 @@
 	      (format "L%s-%s" start end)
 	    (format "L%s" start))))
 
-(defun git-link-gitlab (hostname dirname filename branch commit start end)
+(defun git-link-github (hostname dirname filename branch commit start end)
   (format "https://%s/%s/blob/%s/%s#%s"
 	  hostname
 	  dirname
