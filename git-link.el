@@ -70,7 +70,7 @@
   '(("github.com"    git-link-github)
     ("bitbucket.org" git-link-bitbucket)
     ("gitorious.org" git-link-gitorious)
-    ("gitlab.com"    git-link-github))
+    ("gitlab.com"    git-link-gitlab))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
@@ -165,6 +165,16 @@
           (when (<= line-end line-start)
             (setq line-end nil)))
         (list line-start line-end)))))
+
+(defun git-link-gitlab (hostname dirname filename branch commit start end)
+  (format "https://%s/%s/blob/%s/%s#%s"
+	  hostname
+	  dirname
+	  (or branch commit)
+	  filename
+	  (if (and start end)
+	      (format "L%s-%s" start end)
+	    (format "L%s" start))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
   (format "https://%s/%s/blob/%s/%s#%s"
