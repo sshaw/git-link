@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,6 +33,10 @@
 
 ;;; Change Log:
 
+;; 2015-07-25 - v0.2.1
+;; * Fix for ButBucket's new URL format (Thanks Ev Dolzhenko)
+;; * Fix for GitLab's multiline format (Thanks Enrico Carlesso)
+;;
 ;; 2015-06-05 - v0.2.0
 ;; * Deactivate mark after killing the link (Thanks Kaushal Modi)
 ;; * Support for GitLab (Thanks Swaroop C H)
