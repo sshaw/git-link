@@ -38,7 +38,7 @@ If non-`nil` use the latest commit's hash in the link instead of the branch name
 `git-link-remote-alist` and `git-link-commit-remote-alist` map remotes'
 hostnames to a function capable of creating a URL on that host. To add (or
 modify) how URLs are created for a given host add the appropriate function
-objects to this lists.
+objects to these lists.
 
 If you use a self-hosted version of one of the supported services, you
 can configure the link function alists for the hostname at which that
