@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,8 +33,11 @@
 
 ;;; Change Log:
 
+;; 2015-09-12 - v0.2.2
+;; * Support for BitBucket's multiline format
+;;
 ;; 2015-07-25 - v0.2.1
-;; * Fix for ButBucket's new URL format (Thanks Ev Dolzhenko)
+;; * Fix for BitBucket's new URL format (Thanks Ev Dolzhenko)
 ;; * Fix for GitLab's multiline format (Thanks Enrico Carlesso)
 ;;
 ;; 2015-06-05 - v0.2.0
@@ -176,7 +179,7 @@
 	  dirname
 	  (or branch commit)
 	  filename
-	  (if (and start end)
+	  (if end
 	      (format "L%s-%s" start end)
 	    (format "L%s" start))))
 
@@ -186,7 +189,7 @@
 	  dirname
 	  (or branch commit)
 	  filename
-	  (if (and start end)
+	  (if end
 	      (format "L%s-L%s" start end)
 	    (format "L%s" start))))
 
@@ -218,7 +221,9 @@
 	  commit
 	  filename
 	  (file-name-nondirectory filename)
-	  start))
+	  (if end
+	      (format "%s:%s" start end)
+	    start)))
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
