@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.3.0 (unreleased)
+;; Version: 0.3.0
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,8 +33,9 @@
 
 ;;; Change Log:
 
-;; 2015-XX-XX - v0.3.0
+;; 2015-09-21 - v0.3.0
 ;; * Support for setting branch and remote names via `git config`
+;; * Added git-link-default-branch
 ;; * Removed some functions, use emacs "private" convention for others
 ;;
 ;; 2015-09-12 - v0.2.2
@@ -69,7 +70,10 @@
 (require 'thingatpt)
 
 (defvar git-link-default-remote "origin"
-  "Name of the remote branch to link to.")
+  "Name of the remote to link to.")
+
+(defvar git-link-default-branch nil
+  "Name of the branch to link to.")
 
 (defvar git-link-open-in-browser nil
   "If non-nil also open link in browser via `browse-url'.")
@@ -100,6 +104,7 @@
 
 (defun git-link--branch ()
   (or (car (git-link--exec "config" "--get" "git-link.branch"))
+      git-link-default-branch
       (car (git-link--exec "symbolic-ref" "--short" "HEAD"))))
 
 (defun git-link--remote ()

@@ -14,17 +14,43 @@ With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
 ### Settings
 
-#### `git-link-default-remote`
+Global setting are elisp variables.
 
-Name of the remote branch to link to, defaults to `"origin"`.
+Local settings are managed via the repository's git configuration. They can be set via:
 
-#### `git-link-open-in-browser`
+```
+git config --local --set setting value
+```
+
+Local settings have precedence over global settings.
+
+#### Global
+
+##### `git-link-default-remote`
+
+Name of the remote to link to, defaults to `"origin"`.
+
+##### `git-link-default-branch`
+
+Name of the remote branch to link to, defaults to the current branch.
+
+##### `git-link-open-in-browser`
 
 If non-`nil` also open link in browser via `browse-url`, defaults to `nil`.
 
-#### `git-link-use-commit`
+##### `git-link-use-commit`
 
 If non-`nil` use the latest commit's hash in the link instead of the branch name, defaults to `nil`.
+
+#### Local
+
+##### `git-link.remote`
+
+Name of the remote to link to.
+
+##### `git-link.branch`
+
+Name of the remote branch to link to.
 
 ### Supported Services
 
