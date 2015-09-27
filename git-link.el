@@ -1,4 +1,4 @@
-;;; git-link.el --- Get the GitHub/Bitbucket/Gitorious URL for a buffer location
+;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
 ;; Version: 0.3.0
@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; Create URLs for files and commits in GitHub/Bitbucket/Gitorious/...
+;; Create URLs for files and commits in GitHub/Bitbucket/GitLab/...
 ;; repositories. `git-link' returns the URL for the current buffer's file
 ;; location at the current line number or active region. `git-link-commit'
 ;; returns the URL for a commit. URLs are added to the kill ring.
