@@ -1,5 +1,7 @@
 # git-link
 
+[![MELPA](http://melpa.org/packages/git-link-badge.svg)](http://melpa.org/#/git-link)
+
 Interactive Emacs functions that create URLs for files and commits in
 GitHub/Bitbucket/GitLab/... repositories. `git-link` returns the URL
 for the current buffer's file location at the current line number or active
