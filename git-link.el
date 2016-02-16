@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.3.0
+;; Version: 0.4.0
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,6 +33,10 @@
 
 ;;; Change Log:
 
+;; 2016-02-16 - v0.4.0
+;; * Try branch's tracking remote when other branch settings are not specified
+;; * git-link-default-remote not defaults to nil
+;;
 ;; 2015-09-21 - v0.3.0
 ;; * Support for setting branch and remote names via `git config`
 ;; * Added git-link-default-branch
@@ -69,7 +73,7 @@
 
 (require 'thingatpt)
 
-(defvar git-link-default-remote "origin"
+(defvar git-link-default-remote nil
   "Name of the remote to link to.")
 
 (defvar git-link-default-branch nil
@@ -99,23 +103,37 @@
 ;; This probably wont work for git remotes that aren't services
 (defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
 
+(defun git-link--exec(&rest args)
+  (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
+
+(defun git-link--get-config (name)
+  (car (git-link--exec "config" "--get" name)))
+
+(defun git-link--remotes ()
+  (git-link--exec "remote"))
+
 (defun git-link--last-commit ()
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
 
-(defun git-link--branch ()
-  (or (car (git-link--exec "config" "--get" "git-link.branch"))
-      git-link-default-branch
-      (car (git-link--exec "symbolic-ref" "--short" "HEAD"))))
-
-(defun git-link--remote ()
-  (or (car (git-link--exec "config" "--get" "git-link.remote"))
-      git-link-default-remote))
+(defun git-link--current-branch ()
+  (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
 
 (defun git-link--repo-root ()
   (car (git-link--exec "rev-parse" "--show-toplevel")))
 
 (defun git-link--remote-url (name)
-  (car (git-link--exec "config" "--get" (format "remote.%s.url" name))))
+  (git-link--get-config (format "remote.%s.url" name)))
+
+(defun git-link--branch ()
+  (or (git-link--get-config "git-link.branch")
+      git-link-default-branch
+      (git-link--current-branch)))
+
+(defun git-link--remote ()
+  (or (git-link--get-config "git-link.remote")
+      git-link-default-remote
+      (git-link--get-config (format "branch.%s.remote" (git-link--current-branch)))
+      "origin"))
 
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name))
@@ -133,12 +151,6 @@
   (let ((url (git-link--remote-url remote-name)))
     (if (and url (string-match git-link-remote-regex url))
         (match-string 2 url))))
-
-(defun git-link--exec(&rest args)
-  (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
-
-(defun git-link--remotes ()
-  (git-link--exec "remote"))
 
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))

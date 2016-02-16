@@ -28,7 +28,7 @@ Local settings have precedence over global settings.
 
 ##### `git-link-default-remote`
 
-Name of the remote to link to, defaults to `"origin"`.
+Name of the remote to link to, defaults to `nil`.
 
 ##### `git-link-default-branch`
 
