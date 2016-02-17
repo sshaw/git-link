@@ -86,17 +86,19 @@
 word under point is not a valid commit hash.")
 
 (defvar git-link-remote-alist
-  '(("github.com"    git-link-github)
-    ("bitbucket.org" git-link-bitbucket)
-    ("gitorious.org" git-link-gitorious)
-    ("gitlab.com"    git-link-gitlab))
+  '(("github.com"           git-link-github)
+    ("bitbucket.org"        git-link-bitbucket)
+    ("gitorious.org"        git-link-gitorious)
+    ("gitlab.com"           git-link-gitlab)
+    ("git.savannah.gnu.org" git-link-savannah-gnu))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
-  '(("github.com"    git-link-commit-github)
-    ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious)
-    ("gitlab.com"    git-link-commit-github))
+  '(("github.com"           git-link-commit-github)
+    ("bitbucket.org"        git-link-commit-bitbucket)
+    ("gitorious.org"        git-link-commit-gitorious)
+    ("gitlab.com"           git-link-commit-github)
+    ("git.savannah.gnu.org" git-link-commit-savannah-gnu))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
@@ -248,6 +250,20 @@ word under point is not a valid commit hash.")
 	  hostname
 	  dirname
 	  commit))
+
+(defun git-link-savannah-gnu (hostname dirname filename branch commit start end)
+  (format "http://%s/cgit/%s/tree/%s?id=%s#n%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          filename
+          commit
+          start))
+
+(defun git-link-commit-savannah-gnu (hostname dirname commit)
+  (format "http://%s/cgit/%s/commit/?id=%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          commit))
 
 ;;;###autoload
 (defun git-link (remote start end)
