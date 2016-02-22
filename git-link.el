@@ -90,7 +90,8 @@ word under point is not a valid commit hash.")
     ("bitbucket.org"        git-link-bitbucket)
     ("gitorious.org"        git-link-gitorious)
     ("gitlab.com"           git-link-gitlab)
-    ("git.savannah.gnu.org" git-link-savannah-gnu))
+    ("git.savannah.gnu.org" git-link-savannah-gnu)
+    ("orgmode.org"          git-link-org-mode))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
@@ -98,12 +99,13 @@ word under point is not a valid commit hash.")
     ("bitbucket.org"        git-link-commit-bitbucket)
     ("gitorious.org"        git-link-commit-gitorious)
     ("gitlab.com"           git-link-commit-github)
-    ("git.savannah.gnu.org" git-link-commit-savannah-gnu))
+    ("git.savannah.gnu.org" git-link-commit-savannah-gnu)
+    ("orgmode.org"          git-link-commit-org-mode))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
 ;; This probably wont work for git remotes that aren't services
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
+(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+\\(/[^/]+?\\)*\\)\\(?:\\.git\\)?$")
 
 (defun git-link--last-commit ()
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
@@ -261,6 +263,20 @@ word under point is not a valid commit hash.")
 
 (defun git-link-commit-savannah-gnu (hostname dirname commit)
   (format "http://%s/cgit/%s/commit/?id=%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          commit))
+
+(defun git-link-org-mode (hostname dirname filename branch commit start end)
+  (format "http://%s/cgit.cgi/%s/tree/%s?id=%s#n%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          filename
+          commit
+          start))
+
+(defun git-link-commit-org-mode (hostname dirname commit)
+  (format "http://%s/cgit.cgi/%s/commit/?id=%s"
           hostname
           (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
           commit))
