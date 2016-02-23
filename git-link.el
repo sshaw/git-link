@@ -35,7 +35,7 @@
 
 ;; 2016-02-16 - v0.4.0
 ;; * Try branch's tracking remote when other branch settings are not specified
-;; * git-link-default-remote not defaults to nil
+;; * git-link-default-remote now defaults to nil
 ;;
 ;; 2015-09-21 - v0.3.0
 ;; * Support for setting branch and remote names via `git config`
