@@ -85,18 +85,24 @@
 (defvar git-link-use-commit nil
   "If non-nil use the latest commit's hash in the link instead of the branch name.")
 
+(defvar git-link-commit-fallback-use-latest-commit nil
+  "If non-nil, use the latest commit of the current file in the buffer if the
+word under point is not a valid commit hash.")
+
 (defvar git-link-remote-alist
-  '(("github.com"    git-link-github)
-    ("bitbucket.org" git-link-bitbucket)
-    ("gitorious.org" git-link-gitorious)
-    ("gitlab.com"    git-link-gitlab))
+  '(("github.com"           git-link-github)
+    ("bitbucket.org"        git-link-bitbucket)
+    ("gitorious.org"        git-link-gitorious)
+    ("gitlab.com"           git-link-gitlab)
+    ("git.savannah.gnu.org" git-link-savannah-gnu))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
-  '(("github.com"    git-link-commit-github)
-    ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious)
-    ("gitlab.com"    git-link-commit-github))
+  '(("github.com"           git-link-commit-github)
+    ("bitbucket.org"        git-link-commit-bitbucket)
+    ("gitorious.org"        git-link-commit-gitorious)
+    ("gitlab.com"           git-link-commit-github)
+    ("git.savannah.gnu.org" git-link-commit-savannah-gnu))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
@@ -257,6 +263,20 @@
 	  dirname
 	  commit))
 
+(defun git-link-savannah-gnu (hostname dirname filename branch commit start end)
+  (format "http://%s/cgit/%s/tree/%s?id=%s#n%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          filename
+          commit
+          start))
+
+(defun git-link-commit-savannah-gnu (hostname dirname commit)
+  (format "http://%s/cgit/%s/commit/?id=%s"
+          hostname
+          (replace-regexp-in-string "^r/\\(.*\\)" "\\1.git" dirname)
+          commit))
+
 ;;;###autoload
 (defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
@@ -275,11 +295,10 @@ Defaults to \"origin\"."
 	 (branch      (git-link--branch))
 	 (commit      (git-link--last-commit))
 	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
-
     (cond ((null filename)
 	   (message "Buffer has no file"))
 	  ((null remote-host)
-	   (message "Unknown remote '%s'" remote))
+	   (message "Unknown remote `%s'" remote))
 	  ((and (null commit) (null branch))
 	   (message "Not on a branch, and repo does not have commits"))
 	  ((not (functionp handler))
@@ -301,27 +320,37 @@ Defaults to \"origin\"."
 in the current buffer's GitHub/Bitbucket/Gitorious/...
 repository. The URL will be added to the kill ring.
 
-With a prefix argument prompt for the remote's name.
-Defaults to \"origin\"."
+If the word under point is not a valid commit hash and if
+`git-link-commit-fallback-use-latest-commit' is non-nil, use the latest
+commit hash of the file in the buffer.
 
+With a prefix argument prompt for the remote's name. Defaults to \"origin\"."
   (interactive (list (if current-prefix-arg
                          (git-link--read-remote)
                        (git-link--remote))))
-  (let* ((remote-host (git-link--remote-host remote))
-	 (commit      (word-at-point))
-	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
+  (let* ((valid-commit-regexp "[a-z0-9]\\{7,40\\}")
+         (remote-host (git-link--remote-host remote))
+         (word-at-pt  (word-at-point))
+         (commit      (if (and word-at-pt
+                               (string-match valid-commit-regexp word-at-pt))
+                          word-at-pt
+                        (if git-link-commit-fallback-use-latest-commit
+                            (git-link--last-commit)
+                          "")))
+         (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
     (cond ((null remote-host)
-	   (message "Unknown remote '%s'" remote))
-	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
-	   (message "Point is not on a commit hash"))
-	  ((not (functionp handler))
-	   (message "No handler for %s" remote-host))
-	  ;; null ret val
-	  ((git-link--new
-	    (funcall handler
-		     remote-host
-		     (git-link--remote-dir remote)
-		     commit))))))
+           (message "Unknown remote `%s'" remote))
+          ((not (string-match valid-commit-regexp commit))
+           (message "Invalid commit hash"))
+          ((not (functionp handler))
+           (message "No handler for %s" remote-host))
+          ;; null ret val
+          ((git-link--new
+            (funcall handler
+                     remote-host
+                     (git-link--remote-dir remote)
+                     commit))))))
+
 
 (provide 'git-link)
 ;;; git-link.el ends here
