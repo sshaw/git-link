@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.0
+;; Version: 0.4.1 (unreleased)
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,6 +33,9 @@
 
 ;;; Change Log:
 
+;; 2016-03-XX - v0.4.1
+;; * Better handling for branches that have no explicit remote
+;;
 ;; 2016-02-16 - v0.4.0
 ;; * Try branch's tracking remote when other branch settings are not specified
 ;; * git-link-default-remote now defaults to nil
@@ -124,16 +127,30 @@
 (defun git-link--remote-url (name)
   (git-link--get-config (format "remote.%s.url" name)))
 
+(defun git-link--branch-remote (branch)
+  (git-link--get-config (format "branch.%s.remote" branch)))
+
 (defun git-link--branch ()
   (or (git-link--get-config "git-link.branch")
       git-link-default-branch
       (git-link--current-branch)))
 
 (defun git-link--remote ()
-  (or (git-link--get-config "git-link.remote")
-      git-link-default-remote
-      (git-link--get-config (format "branch.%s.remote" (git-link--current-branch)))
-      "origin"))
+  (let* ((branch (git-link--current-branch))
+	 (remote (or (git-link--get-config "git-link.remote")
+		     git-link-default-remote
+		     (git-link--branch-remote branch))))
+
+    ;; Git defaults to "." if the branch has no remote.
+    ;; If we branch has no remote we try master's, which may be set.
+    (if (or (null remote)
+	    (and (string= remote ".")
+		 (not (string= branch "master"))))
+	(setq remote (git-link--branch-remote "master")))
+
+    (if (or (null remote) (string= remote "."))
+	"origin"
+      remote)))
 
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name))
