@@ -294,7 +294,7 @@ Defaults to \"origin\"."
 	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
 
     (cond ((null filename)
-	   (message "Buffer has no file"))
+	   (message "No git repository found"))
 	  ((null remote-host)
 	   (message "Unknown remote '%s'" remote))
 	  ((and (null commit) (null branch))
