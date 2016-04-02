@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.1 (unreleased)
+;; Version: 0.4.1
 ;; Keywords: git
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,8 +33,9 @@
 
 ;;; Change Log:
 
-;; 2016-03-XX - v0.4.1
+;; 2016-04-01 - v0.4.1
 ;; * Better handling for branches that have no explicit remote
+;; * Better error messages
 ;;
 ;; 2016-02-16 - v0.4.0
 ;; * Try branch's tracking remote when other branch settings are not specified
@@ -172,17 +173,15 @@
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))
 	(current (git-link--remote)))
-    (if remotes
-        (completing-read "Remote: "
-                         remotes
-                         nil
-                         t
-                         ""
-                         nil
-                         (if (member current remotes)
-                             current
-                         (car remotes)))
-     current)))
+    (completing-read "Remote: "
+		     remotes
+		     nil
+		     t
+		     ""
+		     nil
+		     (if (member current remotes)
+			 current
+		       (car remotes)))))
 
 (defun git-link--get-region ()
   (save-restriction
@@ -294,14 +293,12 @@ Defaults to \"origin\"."
 	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
 
     (cond ((null filename)
-	   (message "No git repository found"))
+	   (message "Not in a git repository with a working tree"))
 	  ((null remote-host)
-	   (message "Unknown remote '%s'" remote))
-	  ((and (null commit) (null branch))
-	   (message "Not on a branch, and repo does not have commits"))
+	   (message "Remote '%s' is unknown or contains an unsupported URL" remote))
 	  ((not (functionp handler))
 	   (message "No handler for %s" remote-host))
-	  ;; null ret val
+	  ;; TODO: null ret val
 	  ((git-link--new
 	    (funcall handler
 		     remote-host
@@ -328,7 +325,7 @@ Defaults to \"origin\"."
 	 (commit      (word-at-point))
 	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
     (cond ((null remote-host)
-	   (message "Unknown remote '%s'" remote))
+	   (message "Remote '%s' is unknown or contains an unsupported URL" remote))
 	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
 	   (message "Point is not on a commit hash"))
 	  ((not (functionp handler))
