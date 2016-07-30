@@ -1,8 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.1
-;; Keywords: git
+;; Version: 0.4.2 (unreleased)
+;; Keywords: git, vc
 ;; URL: http://github.com/sshaw/git-link
 
 ;; This file is NOT part of GNU Emacs.
@@ -33,6 +33,9 @@
 
 ;;; Change Log:
 
+;; 2016-XX-XX - v0.4.2
+;; * Support for URLs with ports
+;;
 ;; 2016-04-01 - v0.4.1
 ;; * Better handling for branches that have no explicit remote
 ;; * Better error messages
@@ -103,9 +106,14 @@
     ("gitlab.com"    git-link-commit-github))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
-;; Matches traditional URL and scp style
-;; This probably wont work for git remotes that aren't services
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
+;; Matches traditional URL and scp style:
+;; https://example.com/ruby/ruby.git
+;; git@example.org:sshaw_/customer_gender.git
+;; git@example.com:22/foo/bar.git
+;;
+;; Wont work for git remotes that aren't services.
+;; Consider using url-generic-parse-url, but that requires a URL with a scheme
+(defconst git-link-remote-regex "\\([-.[:word:]]+\\)\\(?:/\\|:[0-9]*/?\\)\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
 
 (defun git-link--exec(&rest args)
   (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
