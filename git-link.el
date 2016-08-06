@@ -90,22 +90,24 @@
   "If non-nil use the latest commit's hash in the link instead of the branch name.")
 
 (defvar git-link-remote-alist
-  '(("github.com"    git-link-github)
-    ("bitbucket.org" git-link-bitbucket)
-    ("gitorious.org" git-link-gitorious)
-    ("gitlab.com"    git-link-gitlab))
+  '(("github.com"           git-link-github)
+    ("bitbucket.org"        git-link-bitbucket)
+    ("gitorious.org"        git-link-gitorious)
+    ("gitlab.com"           git-link-gitlab)
+    ("git.savannah.gnu.org" git-link-cgit))
   "Maps remote hostnames to a function capable of creating the appropriate file URL")
 
 (defvar git-link-commit-remote-alist
-  '(("github.com"    git-link-commit-github)
-    ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious)
-    ("gitlab.com"    git-link-commit-github))
+  '(("github.com"           git-link-commit-github)
+    ("bitbucket.org"        git-link-commit-bitbucket)
+    ("gitorious.org"        git-link-commit-gitorious)
+    ("gitlab.com"           git-link-commit-github)
+    ("git.savannah.gnu.org" git-link-commit-cgit))
   "Maps remote hostnames to a function capable of creating the appropriate commit URL")
 
 ;; Matches traditional URL and scp style
 ;; This probably wont work for git remotes that aren't services
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
+(defconst git-link-remote-regex "\\([-.[:word:]]+\\)[:/]\\([^/.]+\\(?:/[^/.]+\\)?\\)\\(?:\\.git\\)?$")
 
 (defun git-link--exec(&rest args)
   (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
@@ -269,6 +271,20 @@
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
   (format "https://%s/%s/commits/%s"
+	  hostname
+	  dirname
+	  commit))
+
+(defun git-link-cgit (hostname dirname filename branch commit start end)
+  (format "http://%s/cgit/%s.git/tree/%s?id=%s#n%s"
+	  hostname
+	  dirname
+	  filename
+	  commit
+	  start))
+
+(defun git-link-commit-cgit (hostname dirname commit)
+  (format "http://%s/cgit/%s.git/commit/?id=%s"
 	  hostname
 	  dirname
 	  commit))

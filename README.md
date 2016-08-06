@@ -59,6 +59,7 @@ Name of the remote branch to link to.
 * [Bitbucket](http://bitbucket.com)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
+* [Savannah](http://savannah.gnu.org)
 
 ### Building Links and Adding Services
 
