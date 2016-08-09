@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.2 (unreleased)
+;; Version: 0.4.2
 ;; Keywords: git, vc
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,8 +33,8 @@
 
 ;;; Change Log:
 
-;; 2016-XX-XX - v0.4.2
-;; * Support for URLs with ports
+;; 2016-08-09 - v0.4.2
+;; * Fix for URLs with ports (Bug #32)
 ;;
 ;; 2016-04-01 - v0.4.1
 ;; * Better handling for branches that have no explicit remote
