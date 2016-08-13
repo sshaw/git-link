@@ -2,11 +2,13 @@
 
 [![MELPA](http://melpa.org/packages/git-link-badge.svg)](http://melpa.org/#/git-link)
 
-Interactive Emacs functions that create URLs for files and commits in
-GitHub/Bitbucket/GitLab/... repositories. `git-link` returns the URL
-for the current buffer's file location at the current line number or active
-region.  `git-link-commit` returns the URL for a commit. URLs are added to the
-kill ring.
+Interactive Emacs functions that create URLs for files and commits in GitHub/Bitbucket/GitLab/... repositories.
+
+`git-link` returns the URL for the current buffer's file location at the current line number or active region.
+
+`git-link-commit` returns the URL for the commit at point.
+
+URLs are added to the kill ring.
 
 ## Usage
 
@@ -59,6 +61,11 @@ Name of the remote branch to link to.
 * [Bitbucket](http://bitbucket.com)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
+* [Gitorious](http://gitorious.org)
+
+### Git Timemachine
+
+If [`git-timemachine-mode`](https://github.com/pidu/git-timemachine) is active `git-link` generates a URL for the version of the file being visited.
 
 ### Building Links and Adding Services
 
@@ -101,5 +108,6 @@ The `git-link-commit` signature is:
 
 ### TODO
 
+* Tests!
 * Consolidate `git-link-*-alist`s
 * `git-link-grep`

@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.3 (unreleased)
+;; Version: 0.4.3
 ;; Keywords: git, vc
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,8 +33,11 @@
 
 ;;; Change Log:
 
+;; 2016-08-13 - v0.4.3
+;; * Added support for git-timemachine (Issue #22, thanks Diego Berrocal)
+;;
 ;; 2016-08-09 - v0.4.2
-;; * Fix for URLs with ports (Bug #32)
+;; * Fix for URLs with ports (Issue #32)
 ;;
 ;; 2016-04-01 - v0.4.1
 ;; * Better handling for branches that have no explicit remote
@@ -74,7 +77,7 @@
 ;; * Use --short option when calling symbolic-ref (Thanks Steven Huwig)
 ;;
 ;; 2014-02-27 - v0.0.2
-;; * Fix for buffers visiting files through symlinks (Bug #1, thanks Evgeniy Dolzhenko)
+;; * Fix for buffers visiting files through symlinks (Issue #1, thanks Evgeniy Dolzhenko)
 
 ;;; Code:
 
@@ -293,7 +296,7 @@
 ;;;###autoload
 (defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
-GitHub/Bitbucket/Gitorious/... repository at the current line number
+GitHub/Bitbucket/GitLab/... repository at the current line number
 or active region. The URL will be added to the kill ring.
 
 With a prefix argument prompt for the remote's name.
