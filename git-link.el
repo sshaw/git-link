@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.2
+;; Version: 0.4.3 (unreleased)
 ;; Keywords: git, vc
 ;; URL: http://github.com/sshaw/git-link
 
@@ -127,6 +127,11 @@
 (defun git-link--last-commit ()
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
 
+(defun git-link--commit ()
+  (if (git-link--using-git-timemachine)
+      (car git-timemachine-revision)
+    (git-link--last-commit)))
+
 (defun git-link--current-branch ()
   (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
 
@@ -151,7 +156,7 @@
 		     (git-link--branch-remote branch))))
 
     ;; Git defaults to "." if the branch has no remote.
-    ;; If we branch has no remote we try master's, which may be set.
+    ;; If the branch has no remote we try master's, which may be set.
     (if (or (null remote)
 	    (and (string= remote ".")
 		 (not (string= branch "master"))))
@@ -177,6 +182,10 @@
   (let ((url (git-link--remote-url remote-name)))
     (if (and url (string-match git-link-remote-regex url))
         (match-string 2 url))))
+
+(defun git-link--using-git-timemachine ()
+  (and (boundp 'git-timemachine-revision)
+       git-timemachine-revision))
 
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))
@@ -297,7 +306,7 @@ Defaults to \"origin\"."
   (let* ((remote-host (git-link--remote-host remote))
 	 (filename    (git-link--relative-filename))
 	 (branch      (git-link--branch))
-	 (commit      (git-link--last-commit))
+	 (commit      (git-link--commit))
 	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
 
     (cond ((null filename)
@@ -312,7 +321,9 @@ Defaults to \"origin\"."
 		     remote-host
 		     (git-link--remote-dir remote)
 		     filename
-		     (if git-link-use-commit nil branch)
+		     (if (or (git-link--using-git-timemachine) git-link-use-commit)
+			 nil
+		       branch)
 		     commit
 		     start
 		     end))))))
