@@ -359,5 +359,32 @@ Defaults to \"origin\"."
 		     (git-link--remote-dir remote)
 		     commit))))))
 
+;;;###autoload
+(defun git-link-latest-commit (remote)
+  "Create a URL representing the latest commit in the current
+buffer's Github/Bitbucket/Gitorious/... repository. The URL
+will be added to the kill ring
+
+With a prefix argument prompt for the remote's name.
+Defaults to \"origin\"."
+  (interactive (list (if current-prefix-arg
+                         (git-link--read-remote)
+                       (git-link--remote))))
+  (let* ((remote-host (git-link--remote-host remote))
+         (commit      (git-link--last-commit))
+         (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
+    (cond ((null remote-host)
+           (message "Remote '%s' is unknown or contains an unsupported URL" remote))
+          ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
+           (message "Point is not on a commit hash"))
+          ((not (functionp handler))
+           (message "No handler for %s" remote-host))
+          ;; null ret val
+          ((git-link--new
+            (funcall handler
+                     remote-host
+                     (git-link--remote-dir remote)
+                     commit))))))
+
 (provide 'git-link)
 ;;; git-link.el ends here

@@ -12,7 +12,7 @@ URLs are added to the kill ring.
 
 ## Usage
 
-`M-x git-link` and `M-x git-link-commit`
+`M-x git-link`, `M-x git-link-commit`, and `M-x git-link-latest-commit`
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
@@ -105,6 +105,8 @@ The `git-link-commit` signature is:
 * `HOSTNAME` hostname of the remote
 * `DIRNAME` directory portion of the remote
 * `COMMIT` SHA of the commit
+
+The `git-link-latest-commit` signature is the same as `git-link-commit`
 
 ### TODO
 
