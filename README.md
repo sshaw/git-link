@@ -8,11 +8,14 @@ Interactive Emacs functions that create URLs for files and commits in GitHub/Bit
 
 `git-link-commit` returns the URL for the commit at point.
 
+`git-link-homepage` returns the URL for the repository's homepage.
+
 URLs are added to the kill ring.
 
 ## Usage
 
-`M-x git-link` and `M-x git-link-commit`
+Functions can be called interactively (`M-x git-link`) or via the key binding
+of your choice e.g., `(global-set-key (kbd "C-c g l") 'git-link)`
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 

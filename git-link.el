@@ -1,7 +1,7 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.3
+;; Version: 0.4.4
 ;; Keywords: git, vc
 ;; URL: http://github.com/sshaw/git-link
 
@@ -33,6 +33,9 @@
 
 ;;; Change Log:
 
+;; 2016-09-11 - v0.4.4
+;; * Added support for git-link-homepage
+;;
 ;; 2016-08-13 - v0.4.3
 ;; * Added support for git-timemachine (Issue #22, thanks Diego Berrocal)
 ;;
@@ -293,17 +296,21 @@
 	  dirname
 	  commit))
 
+(defun git-link--select-remote ()
+  (if current-prefix-arg
+      (git-link--read-remote)
+    (git-link--remote)))
+
 ;;;###autoload
 (defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
 GitHub/Bitbucket/GitLab/... repository at the current line number
-or active region. The URL will be added to the kill ring.
+or active region. The URL will be added to the kill ring. If
+`git-link-open-in-browser' is non-`nil' also call `browse-url'.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
-  (interactive (let* ((remote (if current-prefix-arg
-                                  (git-link--read-remote)
-                                (git-link--remote)))
+  (interactive (let* ((remote (git-link--select-remote))
                       (region (git-link--get-region)))
                  (list remote (car region) (cadr region))))
   (let* ((remote-host (git-link--remote-host remote))
@@ -334,15 +341,13 @@ Defaults to \"origin\"."
 ;;;###autoload
 (defun git-link-commit (remote)
   "Create a URL representing the commit for the hash under point
-in the current buffer's GitHub/Bitbucket/Gitorious/...
+in the current buffer's GitHub/Bitbucket/GitLab/...
 repository. The URL will be added to the kill ring.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
-  (interactive (list (if current-prefix-arg
-                         (git-link--read-remote)
-                       (git-link--remote))))
+  (interactive (list (git-link--select-remote)))
   (let* ((remote-host (git-link--remote-host remote))
 	 (commit      (word-at-point))
 	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
@@ -358,6 +363,19 @@ Defaults to \"origin\"."
 		     remote-host
 		     (git-link--remote-dir remote)
 		     commit))))))
+
+;;;###autoload
+(defun git-link-homepage (remote)
+  "Create a URL for the current buffer's repository homepage.
+The URL will be added to the kill ring. If `git-link-open-in-browser'
+is non-`nil' also call `browse-url'."
+
+  (interactive (list (git-link--select-remote)))
+  (let ((remote-host (git-link--remote-host remote)))
+    (if remote-host
+	;;TODO: shouldn't assume https, need service specific handler like others
+	(git-link--new (format "https://%s/%s" (git-link--remote-host remote) (git-link--remote-dir remote)))
+      (error  "Remote '%s' is unknown or contains an unsupported URL" remote))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
