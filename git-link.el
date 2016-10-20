@@ -33,6 +33,9 @@
 
 ;;; Change Log:
 
+;; 2016-10-19 - v0.4.5
+;; * Fix for branches containing reserved URLs characters (Issue #36)
+;;
 ;; 2016-09-11 - v0.4.4
 ;; * Added support for git-link-homepage
 ;;
@@ -85,6 +88,7 @@
 ;;; Code:
 
 (require 'thingatpt)
+(require 'url-util)
 
 (defvar git-link-default-remote nil
   "Name of the remote to link to.")
@@ -232,7 +236,8 @@
 
 (defun git-link--new (link)
   (kill-new link)
-  (message link)
+  ;; prevent URL escapes from being interpreted as format strings
+  (message (replace-regexp-in-string "%" "%%" link t t))
   (setq deactivate-mark t)
   (when git-link-open-in-browser
     (browse-url link)))
@@ -333,7 +338,7 @@ Defaults to \"origin\"."
 		     filename
 		     (if (or (git-link--using-git-timemachine) git-link-use-commit)
 			 nil
-		       branch)
+		       (url-hexify-string branch))
 		     commit
 		     start
 		     end))))))
