@@ -2,7 +2,7 @@
 
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
 ;; Version: 0.4.5
-;; Keywords: git, vc
+;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
 
 ;; This file is NOT part of GNU Emacs.
@@ -220,14 +220,15 @@
              (line-start (line-number-at-pos start))
              line-end)
         (when use-region
-          ;; When region is selected from bottom to top, exchange point and mark
-          ;; so that the `point' and `(region-end)' are the same
+          ;; Avoid adding an extra blank line to the selection.
+          ;; This happens when point or mark is at the start of the next line.
+          ;;
+          ;; When selection is from bottom to top, exchange point and mark
+          ;; so that the `point' and `(region-end)' are the same.
           (when (< (point) (mark))
             (exchange-point-and-mark))
-          ;; If the `end' position is at the beginning of a line
-          ;; decrement the position by 1, so that the resultant
-          ;; position is on the previous line.
           (when (= end (line-beginning-position))
+            ;; Go up and avoid the blank line
             (setq end (1- end)))
           (setq line-end (line-number-at-pos end))
           (when (<= line-end line-start)

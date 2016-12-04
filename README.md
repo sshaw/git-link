@@ -109,6 +109,10 @@ The `git-link-commit` signature is:
 * `DIRNAME` directory portion of the remote
 * `COMMIT` SHA of the commit
 
+### See Also
+
+* [copy-as-format](https://github.com/sshaw/copy-as-format)
+
 ### TODO
 
 * Tests!
