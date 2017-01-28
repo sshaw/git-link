@@ -241,7 +241,9 @@
   (message (replace-regexp-in-string "%" "%%" link t t))
   (setq deactivate-mark t)
   (when git-link-open-in-browser
-    (browse-url link)))
+    (browse-url link))
+  link
+  )
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
   (format "https://%s/%s/blob/%s/%s#%s"
