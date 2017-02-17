@@ -328,7 +328,7 @@ Defaults to \"origin\"."
     (cond ((null filename)
 	   (message "Not in a git repository with a working tree"))
 	  ((null remote-host)
-	   (message "Remote '%s' is unknown or contains an unsupported URL" remote))
+	   (message "Remote `%s' is unknown or contains an unsupported URL" remote))
 	  ((not (functionp handler))
 	   (message "No handler for %s" remote-host))
 	  ;; TODO: null ret val
@@ -358,7 +358,7 @@ Defaults to \"origin\"."
 	 (commit      (word-at-point))
 	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
     (cond ((null remote-host)
-	   (message "Remote '%s' is unknown or contains an unsupported URL" remote))
+	   (message "Remote `%s' is unknown or contains an unsupported URL" remote))
 	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
 	   (message "Point is not on a commit hash"))
 	  ((not (functionp handler))
@@ -381,7 +381,7 @@ is non-`nil' also call `browse-url'."
     (if remote-host
 	;;TODO: shouldn't assume https, need service specific handler like others
 	(git-link--new (format "https://%s/%s" (git-link--remote-host remote) (git-link--remote-dir remote)))
-      (error  "Remote '%s' is unknown or contains an unsupported URL" remote))))
+      (error  "Remote `%s' is unknown or contains an unsupported URL" remote))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
