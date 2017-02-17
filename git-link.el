@@ -5,6 +5,7 @@
 ;; Version: 0.5.0 (unreleased)
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
+;; Package-Requires: ((cl-lib "0.6.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -88,6 +89,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'thingatpt)
 (require 'url-util)
 
@@ -107,18 +109,28 @@
   "If non-nil use the latest commit's hash in the link instead of the branch name.")
 
 (defvar git-link-remote-alist
-  '(("github.com"    git-link-github)
-    ("bitbucket.org" git-link-bitbucket)
-    ("gitorious.org" git-link-gitorious)
-    ("gitlab.com"    git-link-gitlab))
-  "Maps remote hostnames to a function capable of creating the appropriate file URL")
+  '(("github" git-link-github)
+    ("bitbucket" git-link-bitbucket)
+    ("gitorious" git-link-gitorious)
+    ("gitlab" git-link-gitlab))
+  "Alist containing (REGEXP FUNCTION) where REGEXP is used to
+match the remote host URL and FUNCTION is capable of creating the
+appropriate file URL.
+
+As an example, \"gitlab\" will match with both \"gitlab.com\" and
+\"gitlab.example.com\".")
 
 (defvar git-link-commit-remote-alist
-  '(("github.com"    git-link-commit-github)
-    ("bitbucket.org" git-link-commit-bitbucket)
-    ("gitorious.org" git-link-commit-gitorious)
-    ("gitlab.com"    git-link-commit-github))
-  "Maps remote hostnames to a function capable of creating the appropriate commit URL")
+  '(("github" git-link-commit-github)
+    ("bitbucket" git-link-commit-bitbucket)
+    ("gitorious" git-link-commit-gitorious)
+    ("gitlab" git-link-commit-github))
+  "Alist containing (REGEXP FUNCTION) where REGEXP is used to
+match the remote host URL and FUNCTION is capable of creating the
+appropriate commit URL.
+
+As an example, \"gitlab\" will match with both \"gitlab.com\" and
+\"gitlab.example.com\".")
 
 ;; Matches traditional URL and scp style:
 ;; https://example.com/ruby/ruby.git
@@ -180,6 +192,23 @@
     (if (or (null remote) (string= remote "."))
 	"origin"
       remote)))
+
+(defun git-link--handler (alist str)
+  "For an ALIST whose `car' (a regexp) matches STR, return cadr.
+
+The ALIST consists of (REGEXP FN) list elements.
+Valid ALISTs are `git-link-commit-remote-alist',`git-link-commit-alist'.
+
+For the first ALIST element whose REGEXP matches with STR, FN is
+returned.
+
+Return nil,
+- if STR does not match with REGEXP in any of the elements of ALIST, or
+- if STR is not a string"
+  (when (stringp str)
+    (cadr (cl-find-if (lambda (lst)
+                        (string-match-p (car lst) str))
+                      alist))))
 
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name))
@@ -325,11 +354,10 @@ Defaults to \"origin\"."
                       (region (git-link--get-region)))
                  (list remote (car region) (cadr region))))
   (let* ((remote-host (git-link--remote-host remote))
-	 (filename    (git-link--relative-filename))
-	 (branch      (git-link--branch))
-	 (commit      (git-link--commit))
-	 (handler     (cadr (assoc remote-host git-link-remote-alist))))
-
+	 (filename (git-link--relative-filename))
+	 (branch (git-link--branch))
+	 (commit (git-link--commit))
+	 (handler (git-link--handler git-link-remote-alist remote-host)))
     (cond ((null filename)
 	   (message "Not in a git repository with a working tree"))
 	  ((null remote-host)
@@ -360,8 +388,8 @@ Defaults to \"origin\"."
 
   (interactive (list (git-link--select-remote)))
   (let* ((remote-host (git-link--remote-host remote))
-	 (commit      (word-at-point))
-	 (handler     (cadr (assoc remote-host git-link-commit-remote-alist))))
+	 (commit (word-at-point))
+	 (handler (git-link--handler git-link-commit-remote-alist remote-host)))
     (cond ((null remote-host)
 	   (message "Remote `%s' is unknown or contains an unsupported URL" remote))
 	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
