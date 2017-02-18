@@ -120,10 +120,11 @@
 ;; https://example.com/ruby/ruby.git
 ;; git@example.org:sshaw_/customer_gender.git
 ;; git@example.com:22/foo/bar.git
+;; http://orgmode@orgmode.org/org-mode.git
 ;;
 ;; Wont work for git remotes that aren't services.
 ;; Consider using url-generic-parse-url, but that requires a URL with a scheme
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)\\(?:/\\|:[0-9]*/?\\)\\([^/]+/[^/]+?\\)\\(?:\\.git\\)?$")
+(defconst git-link-remote-regex "\\([-.[:word:]]+\\)\\(?:/\\|:[0-9]*/?\\)\\([^/]+\\(?:/[^/]+?\\)*\\)\\(?:\\.git\\)?$")
 
 (defun git-link--exec(&rest args)
   (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
