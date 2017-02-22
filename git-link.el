@@ -1,4 +1,4 @@
-;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
+;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
@@ -27,11 +27,11 @@
 ;;; Commentary:
 
 ;; Create URLs for files and commits in GitHub/Bitbucket/GitLab/...
-;; repositories. `git-link' returns the URL for the current buffer's file
-;; location at the current line number or active region. `git-link-commit'
-;; returns the URL for a commit. URLs are added to the kill ring.
+;; repositories.  `git-link' returns the URL for the current buffer's file
+;; location at the current line number or active region.  `git-link-commit'
+;; returns the URL for a commit.  URLs are added to the kill ring.
 ;;
-;; With a prefix argument prompt for the remote's name. Defaults to "origin".
+;; With a prefix argument prompt for the remote's name.  Defaults to "origin".
 
 ;;; Change Log:
 
@@ -113,9 +113,10 @@
     ("bitbucket" git-link-bitbucket)
     ("gitorious" git-link-gitorious)
     ("gitlab" git-link-gitlab))
-  "Alist containing (REGEXP FUNCTION) where REGEXP is used to
-match the remote host URL and FUNCTION is capable of creating the
-appropriate file URL.
+  "Alist of host names and functions creating file links for those.
+Each element looks like (REGEXP FUNCTION) where REGEXP is used to
+match the remote's host name and FUNCTION is used to generate a link
+to the file on remote host.
 
 As an example, \"gitlab\" will match with both \"gitlab.com\" and
 \"gitlab.example.com\".")
@@ -125,9 +126,10 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("bitbucket" git-link-commit-bitbucket)
     ("gitorious" git-link-commit-gitorious)
     ("gitlab" git-link-commit-github))
-  "Alist containing (REGEXP FUNCTION) where REGEXP is used to
-match the remote host URL and FUNCTION is capable of creating the
-appropriate commit URL.
+  "Alist of host names and functions creating commit links for those.
+Each element looks like (REGEXP FUNCTION) where REGEXP is used to
+match the remote's host name and FUNCTION is used to generate a link
+to the commit on remote host.
 
 As an example, \"gitlab\" will match with both \"gitlab.com\" and
 \"gitlab.example.com\".")
@@ -303,7 +305,7 @@ Return nil,
 	  dirname
 	  commit))
 
-(defun git-link-gitorious (hostname dirname filename branch commit start end)
+(defun git-link-gitorious (hostname dirname filename _branch commit start _end)
   (format "https://%s/%s/source/%s:%s#L%s"
 	  hostname
 	  dirname
@@ -317,7 +319,7 @@ Return nil,
 	  dirname
 	  commit))
 
-(defun git-link-bitbucket (hostname dirname filename branch commit start end)
+(defun git-link-bitbucket (hostname dirname filename _branch commit start end)
   ;; ?at=branch-name
   (format "https://%s/%s/src/%s/%s#%s-%s"
 	  hostname
@@ -405,9 +407,9 @@ Defaults to \"origin\"."
 
 ;;;###autoload
 (defun git-link-homepage (remote)
-  "Create a URL for the current buffer's repository homepage.
-The URL will be added to the kill ring. If `git-link-open-in-browser'
-is non-`nil' also call `browse-url'."
+  "Create a URL for the current buffer's REMOTE repository homepage.
+The URL will be added to the kill ring.  If `git-link-open-in-browser'
+is non-nil also call `browse-url'."
 
   (interactive (list (git-link--select-remote)))
   (let ((remote-host (git-link--remote-host remote)))
