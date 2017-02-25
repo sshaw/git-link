@@ -26,7 +26,7 @@ Global setting are elisp variables.
 Local settings are managed via the repository's git configuration. They can be set via:
 
 ```
-git config --local --set setting value
+git config --local --add setting value
 ```
 
 Local settings have precedence over global settings.
