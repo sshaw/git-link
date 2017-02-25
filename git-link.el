@@ -1,7 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location
 
+;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.4.5
+;; Version: 0.5.0 (unreleased)
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
 

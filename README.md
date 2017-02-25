@@ -82,7 +82,7 @@ can configure the link function alists for the hostname at which that
 service is hosted.  For example, for a GitHub Enterprise instance at
 `github.example.com`, you could add the following to your `.emacs` file.
 
-    (eval-after-load "git-link"
+    (eval-after-load 'git-link
       '(progn
         (add-to-list 'git-link-remote-alist
           '("github.example.com" git-link-github))
