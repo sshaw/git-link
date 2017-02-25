@@ -90,6 +90,9 @@
 (require 'thingatpt)
 (require 'url-util)
 
+(eval-when-compile
+  (defvar git-timemachine-revision))    ;silence reference to free variable warning
+
 (defvar git-link-default-remote nil
   "Name of the remote to link to.")
 
