@@ -394,7 +394,7 @@ Defaults to \"origin\"."
 	 (handler (git-link--handler git-link-commit-remote-alist remote-host)))
     (cond ((null remote-host)
 	   (message "Remote `%s' is unknown or contains an unsupported URL" remote))
-	  ((not (string-match "[a-z0-9]\\{7,40\\}" (or commit "")))
+	  ((not (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
 	   (message "Point is not on a commit hash"))
 	  ((not (functionp handler))
 	   (message "No handler for %s" remote-host))
