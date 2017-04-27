@@ -93,22 +93,35 @@
 (require 'thingatpt)
 (require 'url-util)
 
+(defgroup git-link nil
+  "Get the GitHub/Bitbucket/GitLab URL for a buffer location"
+  :prefix "git-link-"
+  :link '(url-link :tag "Report a Bug" "https://github.com/sshaw/git-link/issues")
+  :link '(url-link :tag "Homepage" "https://github.com/sshaw/git-link")
+  :group 'convenience)
+
 (eval-when-compile
   (defvar git-timemachine-revision))    ;silence reference to free variable warning
 
-(defvar git-link-default-remote nil
-  "Name of the remote to link to.")
+(defcustom git-link-default-remote nil
+  "Name of the remote to link to."
+  :group 'git-link)
 
-(defvar git-link-default-branch nil
-  "Name of the branch to link to.")
+(defcustom git-link-default-branch nil
+  "Name of the branch to link to."
+  :group 'git-link)
 
-(defvar git-link-open-in-browser nil
-  "If non-nil also open link in browser via `browse-url'.")
+(defcustom git-link-open-in-browser nil
+  "If non-nil also open link in browser via `browse-url'."
+  :type 'boolean
+  :group 'git-link)
 
-(defvar git-link-use-commit nil
-  "If non-nil use the latest commit's hash in the link instead of the branch name.")
+(defcustom git-link-use-commit nil
+  "If non-nil use the latest commit's hash in the link instead of the branch name."
+  :type 'boolean
+  :group 'git-link)
 
-(defvar git-link-remote-alist
+(defcustom git-link-remote-alist
   '(("github" git-link-github)
     ("bitbucket" git-link-bitbucket)
     ("gitorious" git-link-gitorious)
@@ -119,9 +132,11 @@ match the remote's host name and FUNCTION is used to generate a link
 to the file on remote host.
 
 As an example, \"gitlab\" will match with both \"gitlab.com\" and
-\"gitlab.example.com\".")
+\"gitlab.example.com\"."
+  :type '(alist :key-type string :value-type (group function))
+  :group 'git-link)
 
-(defvar git-link-commit-remote-alist
+(defcustom git-link-commit-remote-alist
   '(("github" git-link-commit-github)
     ("bitbucket" git-link-commit-bitbucket)
     ("gitorious" git-link-commit-gitorious)
@@ -132,7 +147,9 @@ match the remote's host name and FUNCTION is used to generate a link
 to the commit on remote host.
 
 As an example, \"gitlab\" will match with both \"gitlab.com\" and
-\"gitlab.example.com\".")
+\"gitlab.example.com\"."
+  :type '(alist :key-type string :value-type (group function))
+  :group 'git-link)
 
 ;; Matches traditional URL and scp style:
 ;; https://example.com/ruby/ruby.git
