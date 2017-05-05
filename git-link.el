@@ -232,7 +232,20 @@ Return nil,
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name))
 	 (dir      (git-link--repo-root)))
-    (if (and dir filename)
+
+    (when (and (null filename)
+               ;; Is mode check necessary?
+               (or
+                (eq major-mode 'dired-mode)
+                (and (eq major-mode 'magit-status-mode)
+                     (functionp 'magit-file-at-point))))
+
+      (setq filename (or (dired-file-name-at-point)
+                         (magit-file-at-point))))
+
+    (if (and dir filename
+             ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
+             (< (length dir) (length (file-truename filename))))
 	(substring (file-truename filename)
 		   (1+ (length dir))))))
 
@@ -297,24 +310,28 @@ Return nil,
     (browse-url link)))
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/blob/%s/%s#%s"
+  (format "https://%s/%s/blob/%s/%s"
 	  hostname
 	  dirname
 	  (or branch commit)
-	  filename
-	  (if end
-	      (format "L%s-%s" start end)
-	    (format "L%s" start))))
+          (concat filename
+                  (when start
+                    (concat "#"
+                            (if end
+                                (format "L%s-%s" start end)
+                              (format "L%s" start)))))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/blob/%s/%s#%s"
+  (format "https://%s/%s/blob/%s/%s"
 	  hostname
 	  dirname
 	  (or branch commit)
-	  filename
-	  (if end
-	      (format "L%s-L%s" start end)
-	    (format "L%s" start))))
+	  (concat filename
+                  (when start
+                    (concat "#"
+                            (if end
+                                (format "L%s-L%s" start end)
+                              (format "L%s" start)))))))
 
 (defun git-link-commit-github (hostname dirname commit)
   (format "https://%s/%s/commit/%s"
@@ -338,15 +355,19 @@ Return nil,
 
 (defun git-link-bitbucket (hostname dirname filename _branch commit start end)
   ;; ?at=branch-name
-  (format "https://%s/%s/src/%s/%s#%s-%s"
-	  hostname
-	  dirname
-	  commit
-	  filename
-	  (file-name-nondirectory filename)
-	  (if end
-	      (format "%s:%s" start end)
-	    start)))
+  (format "https://%s/%s/src/%s/%s"
+          hostname
+          dirname
+          commit
+          (if (string-blank-p (file-name-nondirectory filename))
+              filename
+            (concat filename
+                    "#"
+                    (file-name-nondirectory filename)
+                    (when start
+                      (if end
+                          (format "-%s:%s" start end)
+                        (format "-%s" start)))))))
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
@@ -370,7 +391,7 @@ or active region. The URL will be added to the kill ring. If
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
   (interactive (let* ((remote (git-link--select-remote))
-                      (region (git-link--get-region)))
+                      (region (when buffer-file-name (git-link--get-region))))
                  (list remote (car region) (cadr region))))
   (let* ((remote-host (git-link--remote-host remote))
 	 (filename (git-link--relative-filename))
@@ -378,7 +399,7 @@ Defaults to \"origin\"."
 	 (commit (git-link--commit))
 	 (handler (git-link--handler git-link-remote-alist remote-host)))
     (cond ((null filename)
-	   (message "Not in a git repository with a working tree"))
+	   (message "Can't figure out what to link to"))
 	  ((null remote-host)
 	   (message "Remote `%s' is unknown or contains an unsupported URL" remote))
 	  ((not (functionp handler))
