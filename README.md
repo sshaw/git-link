@@ -21,7 +21,7 @@ With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
 ### Settings
 
-Global setting are elisp variables.
+Global setting are elisp variables. They can be set directly or via `M-x customize`.
 
 Local settings are managed via the repository's git configuration. They can be set via:
 
