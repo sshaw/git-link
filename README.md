@@ -127,6 +127,7 @@ The `git-link-commit` signature is:
 ### See Also
 
 * [copy-as-format](https://github.com/sshaw/copy-as-format)
+* [output-as-format](https://github.com/sshaw/output-as-format)
 
 ### TODO
 
