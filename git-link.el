@@ -35,6 +35,15 @@
 
 ;;; Change Log:
 
+;; 2017-06-01 - v0.5.0
+;; * Add support for linking in dired and magit modes
+;; * Add support for defcustom
+;; * Change git-link-remote-regex to support more remote URL formats (Thanks Kaushal Modi)
+;; * Change git-link-remote-alist to use regex matching (Thanks Kaushal Modi)
+;; * Fix point on commit hash regex and support uppercase SHAs (Thanks Kaushal Modi!)
+;; * Fix git-link-commit message so that SHA text is displayed without properties
+;; * Enabled lexical-binding (Thanks Kaushal Modi!!)
+
 ;; 2016-10-19 - v0.4.5
 ;; * Fix for branches containing reserved URLs characters (Issue #36)
 ;;
@@ -441,7 +450,7 @@ Defaults to \"origin\"."
 	    (funcall handler
 		     remote-host
 		     (git-link--remote-dir remote)
-		     commit))))))
+		     (substring-no-properties commit)))))))
 
 ;;;###autoload
 (defun git-link-homepage (remote)

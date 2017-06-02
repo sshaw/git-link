@@ -19,6 +19,8 @@ of your choice e.g., `(global-set-key (kbd "C-c g l") 'git-link)`
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
+Works with dired and magit-status modes too.
+
 ### Settings
 
 Global setting are elisp variables. They can be set directly or via `M-x customize`.
