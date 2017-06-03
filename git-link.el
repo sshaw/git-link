@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.5.0
+;; Version: 0.5.1
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((cl-lib "0.6.1"))
@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2017-06-03 - v0.5.1
+;; * Add support for more magit modes
+;;
 ;; 2017-06-01 - v0.5.0
 ;; * Add support for linking in dired and magit modes
 ;; * Add support for defcustom
@@ -43,7 +46,9 @@
 ;; * Fix point on commit hash regex and support uppercase SHAs (Thanks Kaushal Modi!)
 ;; * Fix git-link-commit message so that SHA text is displayed without properties
 ;; * Enabled lexical-binding (Thanks Kaushal Modi!!)
-
+;;
+;; -- Note that v0.5.0 was released as "v0.5.0 (unreleased)"
+;;
 ;; 2016-10-19 - v0.4.5
 ;; * Fix for branches containing reserved URLs characters (Issue #36)
 ;;
@@ -243,11 +248,10 @@ Return nil,
 	 (dir      (git-link--repo-root)))
 
     (when (and (null filename)
-               ;; Is mode check necessary?
-               (or
-                (eq major-mode 'dired-mode)
-                (and (eq major-mode 'magit-status-mode)
-                     (functionp 'magit-file-at-point))))
+               (or (eq major-mode 'dired-mode)
+                   (and
+                    (string-match-p "^magit-" (symbol-name major-mode))
+                    (functionp 'magit-file-at-point))))
 
       (setq filename (or (dired-file-name-at-point)
                          (magit-file-at-point))))
