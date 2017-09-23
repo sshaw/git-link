@@ -423,7 +423,10 @@ Defaults to \"origin\"."
 		     remote-host
 		     (git-link--remote-dir remote)
 		     filename
-		     (if (or (git-link--using-git-timemachine) git-link-use-commit)
+		     (if (or
+		          (null branch)
+		          (git-link--using-git-timemachine)
+		          git-link-use-commit)
 			 nil
 		       (url-hexify-string branch))
 		     commit
