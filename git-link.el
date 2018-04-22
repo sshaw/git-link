@@ -165,16 +165,6 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :type '(alist :key-type string :value-type (group function))
   :group 'git-link)
 
-;; Matches traditional URL and scp style:
-;; https://example.com/ruby/ruby.git
-;; git@example.org:sshaw_/customer_gender.git
-;; git@example.com:22/foo/bar.git
-;; http://orgmode@orgmode.org/org-mode.git
-;;
-;; Wont work for git remotes that aren't services.
-;; Consider using url-generic-parse-url, but that requires a URL with a scheme
-(defconst git-link-remote-regex "\\([-.[:word:]]+\\)\\(?:/\\|:[0-9]*/?\\)\\([^/]+\\(?:/[^/]+?\\)*\\)\\(?:\\.git\\)?$")
-
 (defun git-link--exec(&rest args)
   (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
 
@@ -262,15 +252,22 @@ Return nil,
 	(substring (file-truename filename)
 		   (1+ (length dir))))))
 
+(defun git-link--parse-url (url)
+  (unless (string-match "^[a-zA-Z0-9]+://" url)
+    (setq url (concat "ssh://" url)))
+  (url-generic-parse-url url))
+
 (defun git-link--remote-host (remote-name)
-  (let ((url (git-link--remote-url remote-name)))
-    (if (and url (string-match git-link-remote-regex url))
-	(match-string 1 url))))
+  (let* ((url (git-link--remote-url remote-name)))
+    (when url
+      (url-host (git-link--parse-url url)))))
 
 (defun git-link--remote-dir (remote-name)
-  (let ((url (git-link--remote-url remote-name)))
-    (if (and url (string-match git-link-remote-regex url))
-        (match-string 2 url))))
+  (let (dir (url (git-link--remote-url remote-name)))
+    (when url
+      (setq path (car (url-path-and-query (git-link--parse-url url))))
+      (when (and path (not (string= "/" path)))
+        (substring (file-name-sans-extension path) 1)))))
 
 (defun git-link--using-git-timemachine ()
   (and (boundp 'git-timemachine-revision)
