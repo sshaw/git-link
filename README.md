@@ -1,6 +1,7 @@
 # git-link
 
 [![MELPA](http://melpa.org/packages/git-link-badge.svg)](http://melpa.org/#/git-link)
+[![Build Status](https://travis-ci.org/sshaw/git-link.svg?branch=master)](https://travis-ci.org/sshaw/git-link)
 
 Interactive Emacs functions that create URLs for files and commits in GitHub/Bitbucket/GitLab/... repositories.
 
