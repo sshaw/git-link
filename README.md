@@ -132,6 +132,6 @@ The `git-link-commit` signature is:
 
 ### TODO
 
-* Tests!
+* More tests!
 * Consolidate `git-link-*-alist`s
 * `git-link-grep`
