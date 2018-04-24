@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.6.0 (unreleased)
+;; Version: 0.6.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((cl-lib "0.6.1"))
@@ -35,6 +35,10 @@
 
 ;;; Change Log:
 
+;; 2018-04-23 - v0.6.0
+;; * Fix parsing of remotes with auth info (Issue #51)
+;; * Removed remote regex in favor of url-parse
+;;
 ;; 2017-06-03 - v0.5.1
 ;; * Add support for more magit modes
 ;;
