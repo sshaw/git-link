@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.6.0
+;; Version: 0.7.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,12 @@
 
 ;;; Change Log:
 
+;; 2018-06-03 - v0.7.0
+;; * Add support for Tramp (Issue #49, thanks Jürgen Hötzel)
+;; * Fix various compiler warnings
+;; * Fix differences between url-path-and-query across Emacs versions
+;; * Require Emacs 24.3
+;;
 ;; 2018-04-23 - v0.6.0
 ;; * Fix parsing of remotes with auth info (Issue #51)
 ;; * Removed remote regex in favor of url-parse
