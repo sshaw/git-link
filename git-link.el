@@ -5,7 +5,7 @@
 ;; Version: 0.6.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, convenience
 ;; URL: http://github.com/sshaw/git-link
-;; Package-Requires: ((cl-lib "0.6.1"))
+;; Package-Requires: ((emacs "24.3"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -393,7 +393,7 @@ Return nil,
           hostname
           dirname
           commit
-          (if (string-blank-p (file-name-nondirectory filename))
+          (if (string= "" (file-name-nondirectory filename))
               filename
             (concat filename
                     "#"
