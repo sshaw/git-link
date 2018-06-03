@@ -171,7 +171,15 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :group 'git-link)
 
 (defun git-link--exec(&rest args)
-  (ignore-errors (apply 'process-lines `("git" ,@(when args args)))))
+  (ignore-errors
+    (with-temp-buffer
+      (when (zerop (apply #'process-file "git" nil (current-buffer) nil args))
+        (goto-char (point-min))
+        (cl-loop until (eobp)
+                 collect (buffer-substring-no-properties
+                          (line-beginning-position)
+                          (line-end-position))
+                 do (forward-line 1))))))
 
 (defun git-link--get-config (name)
   (car (git-link--exec "config" "--get" name)))
@@ -191,7 +199,10 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
 
 (defun git-link--repo-root ()
-  (car (git-link--exec "rev-parse" "--show-toplevel")))
+  (let ((dir (car (git-link--exec "rev-parse" "--show-toplevel"))))
+    (if (file-remote-p default-directory)
+	(concat (file-remote-p default-directory) dir)
+      dir)))
 
 (defun git-link--remote-url (name)
   (git-link--get-config (format "remote.%s.url" name)))
