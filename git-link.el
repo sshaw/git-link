@@ -108,6 +108,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'dired)
 (require 'thingatpt)
 (require 'url-util)
 (require 'url-parse)
@@ -124,10 +125,12 @@
 
 (defcustom git-link-default-remote nil
   "Name of the remote to link to."
+  :type 'string
   :group 'git-link)
 
 (defcustom git-link-default-branch nil
   "Name of the branch to link to."
+  :type 'string
   :group 'git-link)
 
 (defcustom git-link-open-in-browser nil
@@ -253,14 +256,13 @@ Return nil,
   (let* ((filename (buffer-file-name))
 	 (dir      (git-link--repo-root)))
 
-    (when (and (null filename)
-               (or (eq major-mode 'dired-mode)
-                   (and
-                    (string-match-p "^magit-" (symbol-name major-mode))
-                    (functionp 'magit-file-at-point))))
-
-      (setq filename (or (dired-file-name-at-point)
-                         (magit-file-at-point))))
+    (when (null filename)
+      (cond
+       ((eq major-mode 'dired-mode)
+        (setq filename (dired-file-name-at-point)))
+       ((and (string-match-p "^magit-" (symbol-name major-mode))
+             (fboundp 'magit-file-at-point))
+        (setq filename (magit-file-at-point)))))
 
     (if (and dir filename
              ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
