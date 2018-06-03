@@ -275,12 +275,14 @@ Return nil,
       (setq url (concat "ssh://" url)))
 
     (setq url  (url-generic-parse-url url)
-          path (car (url-path-and-query url))
+          ;; Normalize path.
+          ;; If none, will nil on Emacs < 25. Later versions return "".
+          path (or (car (url-path-and-query url)) "")
           host (url-host url))
 
     (when host
-
-      (when (and path (not (string= "/" path)))
+      (when (and (not (string= "/" path))
+                 (not (string= ""  path)))
         (setq path (substring (file-name-sans-extension path) 1)))
 
       ;; Fix-up scp style URLs

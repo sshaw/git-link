@@ -4,10 +4,10 @@
 (require 'git-link)
 
 (ert-deftest git-link--parse-remote-test ()
-  (should (equal '("foo" nil)
+  (should (equal '("foo" "")
                  (git-link--parse-remote "foo"))))
 
-  (should (equal '("github.com" nil)
+  (should (equal '("github.com" "")
                  (git-link--parse-remote "https://github.com")))
 
   (should (equal '("github.com" "/")
