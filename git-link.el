@@ -35,7 +35,7 @@
 
 ;;; Change Log:
 
-;; 2018-06-03 - v0.7.0
+;; 2018-06-07 - v0.7.0
 ;; * Add support for Tramp (Issue #49, thanks Jürgen Hötzel)
 ;; * Fix various compiler warnings
 ;; * Fix differences between url-path-and-query across Emacs versions
