@@ -36,7 +36,7 @@
 ;;; Change Log:
 
 ;; 2018-07-08 - v0.7.1
-;; * Add support for vc-revision-other-window
+;; * Add support for vc-revision-other-window files (Issue #54)
 ;;
 ;; 2018-06-07 - v0.7.0
 ;; * Add support for Tramp (Issue #49, thanks Jürgen Hötzel)
