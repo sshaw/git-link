@@ -20,7 +20,7 @@ of your choice e.g., `(global-set-key (kbd "C-c g l") 'git-link)`
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
 
-Works with Dired, Magit, and Tramp too.
+Works with Dired, Magit, VC revisions, and Tramp too.
 
 ### Settings
 
