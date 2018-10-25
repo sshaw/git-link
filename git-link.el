@@ -303,7 +303,7 @@ return (FILENAME . REVISION) otherwise nil."
       (when (and (not (string= "/" path))
                  (not (string= ""  path)))
         (setq path (substring
-                    (if (string-suffix-p ".git" path)
+                    (if (string-match "\\.git\\'" path)
                         (file-name-sans-extension path)
                       path)
                     1)))
