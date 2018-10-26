@@ -71,7 +71,7 @@ Name of the remote branch to link to.
 
 ### Git Timemachine
 
-If [`git-timemachine-mode`](https://github.com/pidu/git-timemachine)
+If [`git-timemachine-mode`](https://gitlab.com/pidu/git-timemachine)
 is active `git-link` generates a URL for the version of the file being
 visited.
 
