@@ -302,7 +302,11 @@ return (FILENAME . REVISION) otherwise nil."
     (when host
       (when (and (not (string= "/" path))
                  (not (string= ""  path)))
-        (setq path (substring (file-name-sans-extension path) 1)))
+        (setq path (substring
+                    (if (string-match "\\.git\\'" path)
+                        (file-name-sans-extension path)
+                      path)
+                    1)))
 
       ;; Fix-up scp style URLs
       (when (string-match ":" host)
