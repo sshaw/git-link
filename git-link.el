@@ -1,8 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2017 Skye Shaw and others
+;; Copyright (C) 2013-2019 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.7.3 (unreleased)
+;; Version: 0.7.3
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
