@@ -68,6 +68,7 @@ Name of the remote branch to link to.
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
 * [Gitorious](http://gitorious.org)
+* [sourcehut](https://sourcehut.org)
 
 ### Git Timemachine
 

@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2013-2017 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.7.2
-;; Keywords: git, vc, github, bitbucket, gitlab, convenience
+;; Version: 0.7.3 (unreleased)
+;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
 
@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2019-03-09 - v0.7.3
+;; * Add support for sourcehut
+;;
 ;; 2018-10-30 - v0.7.2
 ;; * Fix suffix stripping on remote path only if it ends in .git (Issue #58, thanks Marko Crnic)
 ;;
@@ -156,7 +159,8 @@
   :group 'git-link)
 
 (defcustom git-link-remote-alist
-  '(("github" git-link-github)
+  '(("git.sr.ht" git-link-sourcehut)
+    ("github" git-link-github)
     ("bitbucket" git-link-bitbucket)
     ("gitorious" git-link-gitorious)
     ("gitlab" git-link-gitlab))
@@ -171,7 +175,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :group 'git-link)
 
 (defcustom git-link-commit-remote-alist
-  '(("github" git-link-commit-github)
+  '(("git.sr.ht" git-link-commit-github)
+    ("github" git-link-commit-github)
     ("bitbucket" git-link-commit-bitbucket)
     ("gitorious" git-link-commit-gitorious)
     ("gitlab" git-link-commit-github))
@@ -251,7 +256,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   "For an ALIST whose `car' (a regexp) matches STR, return cadr.
 
 The ALIST consists of (REGEXP FN) list elements.
-Valid ALISTs are `git-link-commit-remote-alist',`git-link-commit-alist'.
+Valid ALISTs are `git-link-remote-alist',`git-link-commit-remote-alist'.
 
 For the first ALIST element whose REGEXP matches with STR, FN is
 returned.
