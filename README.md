@@ -76,6 +76,12 @@ If [`git-timemachine-mode`](https://gitlab.com/pidu/git-timemachine)
 is active `git-link` generates a URL for the version of the file being
 visited.
 
+### Magit-blame
+
+If [`magit-blame-mode`](https://magit.vc/manual/magit/Blaming.html) is active
+`git-link` generates a URL for the current active chunk of the file being
+visited.
+
 ### Building Links and Adding Services
 
 `git-link-remote-alist` is an alist containing `(REGEXP FUNCTION)`

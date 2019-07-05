@@ -211,9 +211,10 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
 
 (defun git-link--commit ()
-  (if (git-link--using-git-timemachine)
-      (car git-timemachine-revision)
-    (git-link--last-commit)))
+  (cond
+   ((git-link--using-git-timemachine) (car git-timemachine-revision))
+   ((git-link--using-magit-blame) (oref (magit-blame-chunk-at (point)) :orig-rev))
+   (t (git-link--last-commit))))
 
 (defun git-link--current-branch ()
   (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
@@ -285,9 +286,14 @@ return (FILENAME . REVISION) otherwise nil."
       (cond
        ((eq major-mode 'dired-mode)
         (setq filename (dired-file-name-at-point)))
-       ((and (string-match-p "^magit-" (symbol-name major-mode))
-             (fboundp 'magit-file-at-point))
-        (setq filename (magit-file-at-point)))))
+       ((or
+         (git-link--using-magit-blame)
+         (string-match-p "^magit-" (symbol-name major-mode)))
+        (setq filename (or
+                        (and (fboundp 'magit-file-at-point)
+                             (magit-file-at-point))
+                        (and (fboundp 'magit-current-file)
+                             (magit-current-file)))))))
 
     (if (and dir filename
              ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
@@ -328,6 +334,9 @@ return (FILENAME . REVISION) otherwise nil."
   (and (boundp 'git-timemachine-revision)
        git-timemachine-revision))
 
+(defun git-link--using-magit-blame ()
+  magit-blame-mode)
+
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))
 	(current (git-link--remote)))
@@ -342,29 +351,31 @@ return (FILENAME . REVISION) otherwise nil."
 		       (car remotes)))))
 
 (defun git-link--get-region ()
-  (save-restriction
-    (widen)
-    (save-excursion
-      (let* ((use-region (use-region-p))
-             (start (when use-region (region-beginning)))
-             (end   (when use-region (region-end)))
-             (line-start (line-number-at-pos start))
-             line-end)
-        (when use-region
-          ;; Avoid adding an extra blank line to the selection.
-          ;; This happens when point or mark is at the start of the next line.
-          ;;
-          ;; When selection is from bottom to top, exchange point and mark
-          ;; so that the `point' and `(region-end)' are the same.
-          (when (< (point) (mark))
-            (exchange-point-and-mark))
-          (when (= end (line-beginning-position))
-            ;; Go up and avoid the blank line
-            (setq end (1- end)))
-          (setq line-end (line-number-at-pos end))
-          (when (<= line-end line-start)
-            (setq line-end nil)))
-        (list line-start line-end)))))
+  (cond
+   ((git-link--using-magit-blame) (list (oref (magit-blame-chunk-at (point)) :orig-line) nil))
+   (buffer-file-name (save-restriction
+                       (widen)
+                       (save-excursion
+                         (let* ((use-region (use-region-p))
+                                (start (when use-region (region-beginning)))
+                                (end   (when use-region (region-end)))
+                                (line-start (line-number-at-pos start))
+                                line-end)
+                           (when use-region
+                             ;; Avoid adding an extra blank line to the selection.
+                             ;; This happens when point or mark is at the start of the next line.
+                             ;;
+                             ;; When selection is from bottom to top, exchange point and mark
+                             ;; so that the `point' and `(region-end)' are the same.
+                             (when (< (point) (mark))
+                               (exchange-point-and-mark))
+                             (when (= end (line-beginning-position))
+                               ;; Go up and avoid the blank line
+                               (setq end (1- end)))
+                             (setq line-end (line-number-at-pos end))
+                             (when (<= line-end line-start)
+                               (setq line-end nil)))
+                           (list line-start line-end)))))))
 
 (defun git-link--new (link)
   (kill-new link)
@@ -387,11 +398,12 @@ return (FILENAME . REVISION) otherwise nil."
                               (format "L%s" start)))))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/blob/%s/%s"
-	  hostname
-	  dirname
-	  (or branch commit)
-	  (concat filename
+  (format "https://%s/%s/%s/%s/%s"
+   hostname
+   dirname
+   (if (git-link--using-magit-blame) "blame" "blob")
+   (or branch commit)
+   (concat filename
                   (when start
                     (concat "#"
                             (if end
@@ -456,7 +468,7 @@ or active region. The URL will be added to the kill ring. If
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
   (interactive (let* ((remote (git-link--select-remote))
-                      (region (when buffer-file-name (git-link--get-region))))
+                      (region (git-link--get-region)))
                  (list remote (car region) (cadr region))))
   (let (filename branch commit handler remote-info (remote-url (git-link--remote-url remote)))
     (if (null remote-url)
