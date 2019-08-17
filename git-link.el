@@ -211,9 +211,12 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
 
 (defun git-link--commit ()
-  (if (git-link--using-git-timemachine)
-      (car git-timemachine-revision)
-    (git-link--last-commit)))
+  (cond
+   ((git-link--using-git-timemachine)
+    (car git-timemachine-revision))
+   ((git-link--using-magit-blob-mode)
+    magit-buffer-revision)
+   (t (git-link--last-commit))))
 
 (defun git-link--current-branch ()
   (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
@@ -233,6 +236,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 (defun git-link--branch ()
   (or (git-link--get-config "git-link.branch")
       git-link-default-branch
+      (when (git-link--using-magit-blob-mode)
+        (magit-rev-branch magit-buffer-revision))
       (git-link--current-branch)))
 
 (defun git-link--remote ()
@@ -285,6 +290,8 @@ return (FILENAME . REVISION) otherwise nil."
       (cond
        ((eq major-mode 'dired-mode)
         (setq filename (dired-file-name-at-point)))
+       ((git-link--using-magit-blob-mode)
+        (setq filename magit-buffer-file-name))
        ((and (string-match-p "^magit-" (symbol-name major-mode))
              (fboundp 'magit-file-at-point))
         (setq filename (magit-file-at-point)))))
@@ -327,6 +334,9 @@ return (FILENAME . REVISION) otherwise nil."
 (defun git-link--using-git-timemachine ()
   (and (boundp 'git-timemachine-revision)
        git-timemachine-revision))
+
+(defun git-link--using-magit-blob-mode ()
+  (bound-and-true-p magit-blob-mode))
 
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))
@@ -456,7 +466,8 @@ or active region. The URL will be added to the kill ring. If
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
   (interactive (let* ((remote (git-link--select-remote))
-                      (region (when buffer-file-name (git-link--get-region))))
+                      (region (when (or buffer-file-name (git-link--using-magit-blob-mode))
+                                (git-link--get-region))))
                  (list remote (car region) (cadr region))))
   (let (filename branch commit handler remote-info (remote-url (git-link--remote-url remote)))
     (if (null remote-url)
@@ -486,7 +497,10 @@ Defaults to \"origin\"."
                          (car remote-info)
                          (cadr remote-info)
                          filename
-                         (if (or (git-link--using-git-timemachine) vc-revison git-link-use-commit)
+                         (if (or (git-link--using-git-timemachine)
+                                 (git-link--using-magit-blob-mode)
+                                 vc-revison
+                                 git-link-use-commit)
                              nil
                            (url-hexify-string branch))
                          commit
