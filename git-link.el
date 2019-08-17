@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2019 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.7.3
+;; Version: 0.7.4
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2019-08-16 - v0.7.4
+;; * Add support for Magit-Blob buffers (Issue #61, thanks Miciah Dashiel Butler Masters)
+;;
 ;; 2019-03-09 - v0.7.3
 ;; * Add support for sourcehut
 ;;
