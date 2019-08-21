@@ -30,3 +30,15 @@
 
   (should (equal '("foo-bar.github.com" "sshaw/foo/x")
                  (git-link--parse-remote "https://user:password@foo-bar.github.com/sshaw/foo/x.git")))
+
+  (should (equal '("msazure.visualstudio.com" "project/_git/repo")
+                 (git-link--parse-remote "msazure@vs-ssh.visualstudio.com:v3/msazure/project/repo")))
+
+  (should (equal '("msazure.visualstudio.com" "DefaultCollection/project/_git/repo")
+                 (git-link--parse-remote "https://msazure.visualstudio.com/DefaultCollection/project/_git/repo")))
+
+  (should (equal '("dev.azure.com" "r-darwish/project/_git/repo")
+                 (git-link--parse-remote "git@ssh.dev.azure.com:v3/r-darwish/project/repo")))
+
+  (should (equal '("dev.azure.com" "r-darwish/project/_git/repo")
+                 (git-link--parse-remote "https://r-darwish@dev.azure.com/r-darwish/project/_git/repo")))
