@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2019-08-28 - v0.7.5
+;; * Add support for Azure DevOps (Issue #62, thanks Roey Darwish Dror)
+;;
 ;; 2019-08-16 - v0.7.4
 ;; * Add support for Magit-Blob buffers (Issue #61, thanks Miciah Dashiel Butler Masters)
 ;;

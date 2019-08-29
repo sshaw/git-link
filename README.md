@@ -64,6 +64,7 @@ Name of the remote branch to link to.
 
 ### Supported Services
 
+* [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
 * [Bitbucket](http://bitbucket.com)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
