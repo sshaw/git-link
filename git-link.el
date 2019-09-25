@@ -290,19 +290,27 @@ return (FILENAME . REVISION) otherwise nil."
     (cons (match-string 1 filename)
           (match-string 2 filename))))
 
-(defun git-link--relative-filename ()
-  (let* ((filename (buffer-file-name))
-	 (dir      (git-link--repo-root)))
+(defun git-link--absolute-filename ()
+  "Get the absolute filename of the current buffer."
+  (cond
+   ;; If over a file in `dired-mode'...
+   ((and (eq major-mode 'dired-mode)
+         (dired-file-name-at-point)))
+   ;; Else if Magit knows the file...
+   ((and (git-link--using-magit-blob-mode)
+         magit-buffer-file-name))
+   ;; Else if over a file in a Magit buffer...
+   ((and (string-match-p "^magit-" (symbol-name major-mode))
+         (fboundp 'magit-file-at-point)
+         (magit-file-at-point)))
+   ;; Else...
+   (t
+    default-directory)))
 
-    (when (null filename)
-      (cond
-       ((eq major-mode 'dired-mode)
-        (setq filename (dired-file-name-at-point)))
-       ((git-link--using-magit-blob-mode)
-        (setq filename magit-buffer-file-name))
-       ((and (string-match-p "^magit-" (symbol-name major-mode))
-             (fboundp 'magit-file-at-point))
-        (setq filename (magit-file-at-point)))))
+(defun git-link--relative-filename ()
+  "Get the filename relative to the repository's root."
+  (let* ((filename (git-link--absolute-filename))
+	 (dir      (git-link--repo-root)))
 
     (if (and dir filename
              ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
