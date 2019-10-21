@@ -16,6 +16,9 @@
   (should (equal '("github.com" "sshaw_/selfie_formatter")
                  (git-link--parse-remote "git@github.com:sshaw_/selfie_formatter.git")))
 
+  (should (equal '("github.com" "sshaw_/selfie_formatter")
+                 (git-link--parse-remote "git+ssh@github.com:sshaw_/selfie_formatter.git")))
+
   (should (equal '("github.com" "ruby/ruby")
                  (git-link--parse-remote "https://github.com/ruby/ruby.git")))
 
