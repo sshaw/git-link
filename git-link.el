@@ -432,14 +432,13 @@ return (FILENAME . REVISION) otherwise nil."
                               (format "L%s" start)))))))
 
 (defun git-link-azure (hostname dirname filename branch commit start end)
-  (format "https://%s/%s?path=%s&version=%s%s"
+  (format "https://%s/%s?path=%%2F%s&version=%s&line=%s&lineEnd=%s&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
 	  hostname
 	  dirname
       filename
       (concat "G" (if branch "B" "C") (or branch commit))
-      (concat
-       (when start (format "&line=%s" start))
-       (when end (format "&lineEnd=%s" end)))))
+      start
+      (or end start)))
 
 (defun git-link-commit-github (hostname dirname commit)
   (format "https://%s/%s/commit/%s"
