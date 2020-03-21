@@ -164,6 +164,15 @@
   :type 'boolean
   :group 'git-link)
 
+(defcustom git-link-preferred-format '(branch
+                                       tag
+                                       commit)
+  "Priority of format style used in URL"
+  :type '(repeat (choice (const branch)
+                         (const tag)
+                         (const commit)))
+  :group 'git-link)
+
 (defcustom git-link-remote-alist
   '(("git.sr.ht" git-link-sourcehut)
     ("github" git-link-github)
@@ -229,6 +238,9 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 (defun git-link--current-branch ()
   (car (git-link--exec "symbolic-ref" "--short" "HEAD")))
 
+(defun git-link--current-tag ()
+  (car (git-link--exec "describe" "--tags" "--exact-match")))
+
 (defun git-link--repo-root ()
   (let ((dir (car (git-link--exec "rev-parse" "--show-toplevel"))))
     (if (file-remote-p default-directory)
@@ -247,6 +259,11 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
       (when (git-link--using-magit-blob-mode)
         (magit-rev-branch magit-buffer-revision))
       (git-link--current-branch)))
+
+(defun git-link--tag ()
+  (or (when (git-link--using-magit-blob-mode)
+        (magit-tag-at-point))
+      (git-link--current-tag)))
 
 (defun git-link--remote ()
   (let* ((branch (git-link--current-branch))
@@ -436,7 +453,7 @@ return (FILENAME . REVISION) otherwise nil."
 	  hostname
 	  dirname
       filename
-      (concat "G" (if branch "B" "C") (or branch commit))
+      branch
       start
       (or end start)))
 
@@ -496,6 +513,12 @@ return (FILENAME . REVISION) otherwise nil."
       (git-link--read-remote)
     (git-link--remote)))
 
+(defun git-link--prepare-prefix (host format placeholder)
+  (if (or (string= "dev.azure.com" host)
+          (string-suffix-p ".visualstudio.com" host))
+      (concat "G" (if (eq 'branch format) "B" "C") placeholder)
+     placeholder))
+
 ;;;###autoload
 (defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
@@ -515,7 +538,6 @@ Defaults to \"origin\"."
 
       (setq remote-info (git-link--parse-remote remote-url)
             filename    (git-link--relative-filename)
-            branch      (git-link--branch)
             commit      (git-link--commit)
             handler     (git-link--handler git-link-remote-alist (car remote-info)))
 
@@ -527,22 +549,31 @@ Defaults to \"origin\"."
              (message "No handler found for %s" (car remote-info)))
             ;; TODO: null ret val
             (t
-             (let ((vc-revison (git-link--parse-vc-revision filename)))
+             (let ((vc-revison (git-link--parse-vc-revision filename))
+                   (host (car remote-info))
+                   (url (cadr remote-info)))
                (when vc-revison
                  (setq filename (car vc-revison)
                        commit   (cdr vc-revison)))
 
                (git-link--new
                 (funcall handler
-                         (car remote-info)
-                         (cadr remote-info)
+                         host
+                         url
                          filename
                          (if (or (git-link--using-git-timemachine)
                                  (git-link--using-magit-blob-mode)
                                  vc-revison
                                  git-link-use-commit)
                              nil
-                           (url-hexify-string branch))
+                           (catch 'placeholder
+                             (dolist (format-style git-link-preferred-format)
+                               (let ((placeholder (funcall (intern (format "git-link--%s" format-style)))))
+                                 (when (not (or (null placeholder) (string-empty-p placeholder)))
+                                   (throw 'placeholder (git-link--prepare-prefix host format-style
+                                                        (if (memq format-style '(branch tag))
+                                                            (url-hexify-string placeholder)
+                                                          placeholder))))))))
                          commit
                          start
                          end))))))))
