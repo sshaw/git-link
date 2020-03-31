@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2019 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.7.4
+;; Version: 0.7.6
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2020-03-31 - v0.7.6
+;; * Adapt to changes in Azure interface (Issue #65, thanks Roey Darwish Dror)
+;;
 ;; 2019-08-28 - v0.7.5
 ;; * Add support for Azure DevOps (Issue #62, thanks Roey Darwish Dror)
 ;;
