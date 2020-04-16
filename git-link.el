@@ -354,8 +354,8 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defvar magit-buffer-file-name)
 
-(defun git-link--relative-filename ()
-  (let* ((filename (buffer-file-name (buffer-base-buffer)))
+(defun git-link--relative-filename (&optional filename)
+  (let* ((filename (or filename (buffer-file-name (buffer-base-buffer))))
 	 (dir      (git-link--repo-root)))
 
     (when (null filename)
@@ -666,6 +666,55 @@ return (FILENAME . REVISION) otherwise nil."
     (git-link--remote)))
 
 ;;;###autoload
+(defun git-link-url (file-or-buffer remote &optional start end use-branch-p)
+  "Create a URL for the FILE-OR-BUFFER's location at REMOTE.
+
+When given START and END, include the current line number or
+active region.
+
+When given USE-BRANCH-P, force the use of the branch name in the
+resultant url."
+  (let* ((filename (git-link--relative-filename
+                    (if (bufferp file-or-buffer)
+                        (buffer-file-name file-or-buffer)
+                      file-or-buffer)))
+         (remote      (or remote git-link-default-remote))
+         (remote-url  (git-link--remote-url remote))
+         (remote-info (git-link--parse-remote remote-url))
+         (branch      (git-link--branch))
+         (commit      (git-link--commit))
+         (handler     (git-link--handler git-link-remote-alist (car remote-info))))
+    (cond ((null remote-url)
+           (user-error "Remote `%s' not found" remote))
+          ((null filename)
+           (user-error "Can't figure out what to link to"))
+          ((null (car remote-info))
+           (user-error "Remote `%s' contains an unsupported URL" remote))
+          ((not (functionp handler))
+           (user-error "No handler found for %s" (car remote-info)))
+          ;; TODO: null ret val
+          (t
+           (let* ((vc-revision (git-link--parse-vc-revision filename))
+                  (hostname (car remote-info))
+                  (dirname (cadr remote-info))
+                  (branch (if (and (not use-branch-p)
+                                   (or (git-link--using-git-timemachine)
+                                       (git-link--using-magit-blob-mode)
+                                       vc-revision
+                                       git-link-use-commit))
+                              nil
+                            (url-hexify-string branch)))
+                  (filename (if vc-revision (car vc-revision) filename))
+                  (commit (if vc-revision (car vc-revision) commit)))
+             (funcall handler
+                      hostname
+                      dirname
+                      filename
+                      branch
+                      commit
+                      start
+                      end))))))
+
 (defun git-link (remote start end)
   "Create a URL representing the current buffer's location in its
 GitHub/Bitbucket/GitLab/... repository at the current line number
@@ -688,43 +737,10 @@ Defaults to \"origin\"."
            (list remote nil nil)
          (list remote (car region) (cadr region))))))
 
-  (let (filename branch commit handler remote-info (remote-url (git-link--remote-url remote)))
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
-
-      (setq remote-info (git-link--parse-remote remote-url)
-            filename    (git-link--relative-filename)
-            branch      (git-link--branch)
-            commit      (git-link--commit)
-            handler     (git-link--handler git-link-remote-alist (car remote-info)))
-
-      (cond ((null filename)
-             (message "Can't figure out what to link to"))
-            ((null (car remote-info))
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (functionp handler))
-             (message "No handler found for %s" (car remote-info)))
-            ;; TODO: null ret val
-            (t
-             (let ((vc-revison (git-link--parse-vc-revision filename)))
-               (when vc-revison
-                 (setq filename (car vc-revison)
-                       commit   (cdr vc-revison)))
-
-               (git-link--new
-                (funcall handler
-                         (car remote-info)
-                         (cadr remote-info)
-                         filename
-                         (if (or (git-link--using-git-timemachine)
-                                 (git-link--using-magit-blob-mode)
-                                 vc-revison
-                                 git-link-use-commit)
-                             nil
-                           (url-hexify-string branch))
-                         commit
-                         start
-                         end))))))))
+  (condition-case err
+      (git-link--new (git-link-url buffer-file-name remote start end))
+    (user-error
+     (message (cadr err)))))
 
 ;;;###autoload
 (defun git-link-commit (remote)
