@@ -1,0 +1,6 @@
+# Configuration for probot-no-response - https://github.com/probot/no-response
+
+daysUntilClose: 7
+responseRequiredLabel: more info
+closeComment: >
+  Closing due to lack of feedback. Feel free to reopen with additional info.
