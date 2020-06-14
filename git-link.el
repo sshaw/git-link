@@ -201,6 +201,21 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :type '(alist :key-type string :value-type (group function))
   :group 'git-link)
 
+(defcustom git-link-blame-matchers
+  '(("git.sr.ht" nil)
+    ("github"    ("/blob/" "/blame/"))
+    ("bitbucket" ("/src/" "/annotate/"))
+    ("gitorious" nil)
+    ("gitlab"    ("/blob/" "/blame/"))
+    ("visualstudio\\|azure" nil))
+  "Alist for `git-link-blame' fn to determine how to convert a
+git-link URL to a git-blame URL. Each value can either be a tuple
+of a regexp and its replacement, or a function that takes a
+git-link URL string as a parameter and returns the converted
+git-blame URL string."
+  :type '(alist :key-type string :value-type (group function))
+  :group 'git-link)
+
 (defun git-link--exec(&rest args)
   (ignore-errors
     (with-temp-buffer
@@ -597,10 +612,15 @@ is non-nil also call `browse-url'."
 
 ;;;###autoload
 (defun git-link-blame ()
-  "Similar to `git-link`, with the differnce of creating a git-blame link"
+  "Similar to `git-link`, with the difference of creating a git-blame link url"
   (interactive)
-  (cl-flet ((git-link--new* (x) (replace-regexp-in-string "/blob/" "/blame/" x)))
-    (advice-add 'git-link--new :override #'git-link--new*)
+  (cl-flet ((git-link--new*
+             (git-link-url)
+             (let ((match (git-link--handler git-link-blame-matchers git-link-url)))
+               (cond ((functionp match) (funcall match git-link-url))
+                     ((car match) (replace-regexp-in-string (car match) (cadr match) git-link-url))
+                     (t (message (format "No match exists in `git-link-blame-matchers` var for %s" git-link-url)))))))
+    (advice-add 'git-link--new :override #'git-link--new*) ; local override
     (let ((link (call-interactively 'git-link)))
       (advice-remove 'git-link--new #'git-link--new*)
       (git-link--new link))))
