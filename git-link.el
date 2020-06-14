@@ -595,5 +595,15 @@ is non-nil also call `browse-url'."
 	(git-link--new (format "https://%s/%s" (car remote-info) (cadr remote-info)))
       (error  "Remote `%s' is unknown or contains an unsupported URL" remote))))
 
+;;;###autoload
+(defun git-link-blame ()
+  "Similar to `git-link`, with the differnce of creating a git-blame link"
+  (interactive)
+  (cl-flet ((git-link--new* (x) (replace-regexp-in-string "/blob/" "/blame/" x)))
+    (advice-add 'git-link--new :override #'git-link--new*)
+    (let ((link (call-interactively 'git-link)))
+      (advice-remove 'git-link--new #'git-link--new*)
+      (git-link--new link))))
+
 (provide 'git-link)
 ;;; git-link.el ends here
