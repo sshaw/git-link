@@ -52,6 +52,12 @@ If non-`nil` also open link in browser via `browse-url`, defaults to `nil`.
 
 If non-`nil` use the latest commit's hash in the link instead of the branch name, defaults to `nil`.
 
+##### `git-link-use-single-line-number`
+
+If `nil` line numbers are only added when the selection contains more than 1 line, defaults to `t`.
+
+Note that `git-link` will exclude line numbers when invoked with the `-` prefix argument.
+
 #### Local
 
 ##### `git-link.remote`
