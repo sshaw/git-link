@@ -1,8 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2019 Skye Shaw and others
+;; Copyright (C) 2013-2020 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.7.6
+;; Version: 0.8.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -38,6 +38,7 @@
 ;; 2020-07-21 - v0.8.0
 ;; * Add `-' prefix argument to git-link to generate links without line numbers
 ;; * Add git-link-use-single-line-number
+;; * Fix sourcehut's git-link handler
 ;;
 ;; 2020-03-31 - v0.7.6
 ;; * Adapt to changes in Azure interface (Issue #65, thanks Roey Darwish Dror)
@@ -182,7 +183,7 @@ See its docs."
   :group 'git-link)
 
 (defcustom git-link-remote-alist
-  '(("git.sr.ht" git-link-sourcehut)
+  '(("git.sr.ht" git-link-github)
     ("github" git-link-github)
     ("bitbucket" git-link-bitbucket)
     ("gitorious" git-link-gitorious)
