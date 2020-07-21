@@ -15,10 +15,14 @@ URLs are added to the kill ring.
 
 ## Usage
 
-Functions can be called interactively (`M-x git-link`) or via the key binding
-of your choice e.g., `(global-set-key (kbd "C-c g l") 'git-link)`
+Functions can be called interactively (`M-x git-link`) or via a key binding of your choice. For example:
+```el
+(global-set-key (kbd "C-c g l") 'git-link)
+```
 
 With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
+
+With a prefix argument of `-`, generate a link without line numbers.
 
 Works with Dired, Magit, VC revisions, and Tramp too.
 
