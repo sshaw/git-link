@@ -1,25 +1,64 @@
-# Mostly stolen from https://github.com/npostavs/emacs-travis/
-language: generic
-sudo: false
+# https://github.com/purcell/nix-emacs-ci
+language: nix
 
-env:
-  matrix:
-    - EMACS_VERSION=24.3
-    - EMACS_VERSION=24.5
-    - EMACS_VERSION=25.3
-    - EMACS_VERSION=26
-    - EMACS_VERSION=master
-  allow_failures:
-    - env: EMACS_VERSION=master
+cache:
+  directories:
+  - $HOME/nix.store
+
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-24-3
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-24-4
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-24-5
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-25-1
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-25-2
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-25-3
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-26-1
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-26-2
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-26-3
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-27-1
+    - os: linux
+      dist: bionic
+      env: EMACS_CI=emacs-snapshot
+
+before_install:
+  - sudo mkdir -p /etc/nix
+  - echo "substituters = https://cache.nixos.org/ file://$HOME/nix.store" | sudo tee -a /etc/nix/nix.conf > /dev/null
+  - echo 'require-sigs = false' | sudo tee -a /etc/nix/nix.conf > /dev/null
+
+before_cache:
+  - mkdir -p $HOME/nix.store
+  - nix copy --to file://$HOME/nix.store -f default.nix buildInputs
 
 install:
-  - curl -LO https://github.com/npostavs/emacs-travis/releases/download/bins/emacs-bin-${EMACS_VERSION}.tar.gz
-  - tar -xaf emacs-bin-${EMACS_VERSION}.tar.gz -C /
-  - export PATH=/tmp/emacs/bin:${PATH}
-
+  # The default "emacs" executable on the $PATH will now be the version named by $EMACS_CI
+  - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
 script:
   - emacs --version
+  - make build
   - make test
 
-notifications:
-  email: false
+allow_failures:
+  - os: linux
+    dist: bionic
+    env: EMACS_CI=emacs-snapshot
