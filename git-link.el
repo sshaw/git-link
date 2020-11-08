@@ -238,6 +238,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 (defun git-link--last-commit ()
   (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
 
+(defvar magit-buffer-revision)
+
 (defun git-link--commit ()
   (cond
    ((git-link--using-git-timemachine)
@@ -260,6 +262,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 
 (defun git-link--branch-remote (branch)
   (git-link--get-config (format "branch.%s.remote" branch)))
+
+(declare-function magit-rev-branch "ext:magit-git")
 
 (defun git-link--branch ()
   (or (git-link--get-config "git-link.branch")
@@ -309,6 +313,8 @@ return (FILENAME . REVISION) otherwise nil."
              (file-exists-p (match-string 1 filename)))
     (cons (match-string 1 filename)
           (match-string 2 filename))))
+
+(defvar magit-buffer-file-name)
 
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name))
