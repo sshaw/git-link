@@ -5,7 +5,7 @@
 
 (ert-deftest git-link--parse-remote-test ()
   (should (equal '("foo" "")
-                 (git-link--parse-remote "foo"))))
+                 (git-link--parse-remote "foo")))
 
   (should (equal '("github.com" "")
                  (git-link--parse-remote "https://github.com")))
@@ -41,4 +41,4 @@
                  (git-link--parse-remote "git@ssh.dev.azure.com:v3/r-darwish/project/repo")))
 
   (should (equal '("dev.azure.com" "r-darwish/project/_git/repo")
-                 (git-link--parse-remote "https://r-darwish@dev.azure.com/r-darwish/project/_git/repo")))
+                 (git-link--parse-remote "https://r-darwish@dev.azure.com/r-darwish/project/_git/repo"))))
