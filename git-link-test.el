@@ -22,6 +22,9 @@
   (should (equal '("github.com" "sshaw/copy-as-format")
                  (git-link--parse-remote "https://github.com:9999/sshaw/copy-as-format.git")))
 
+  (should (equal '("github.com" "ScreenStaring/Some-Thing")
+                 (git-link--parse-remote "git@github.com:ScreenStaring/Some-Thing.git")))
+
   (should (equal '("orgmode.org" "org-mode")
                  (git-link--parse-remote "https://orgmode.org/org-mode.git")))
 

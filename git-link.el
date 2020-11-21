@@ -342,11 +342,11 @@ return (FILENAME . REVISION) otherwise nil."
     (unless (string-match "^[a-zA-Z0-9]+://" url)
       (setq url (concat "ssh://" url)))
 
-    (setq url  (url-generic-parse-url url)
+    (setq parsed (url-generic-parse-url url)
           ;; Normalize path.
-          ;; If none, will nil on Emacs < 25. Later versions return "".
-          path (or (car (url-path-and-query url)) "")
-          host (url-host url))
+          ;; If none, will be nil on Emacs < 25. Later versions return "".
+          path (or (car (url-path-and-query parsed)) "")
+          host (url-host parsed))
 
     (when host
       (when (and (not (string= "/" path))
@@ -357,11 +357,15 @@ return (FILENAME . REVISION) otherwise nil."
                       path)
                     1)))
 
-      ;; Fix-up scp style URLs
+      ;; Fix-up scp style URLs.
+      ;; git@foo:UsEr/repo gives a host of foo:user
+      ;; We also need to preserve case so we take UsEr from the original url
       (when (string-match ":" host)
-        (let ((parts (split-string host ":" t)))
+        (let ((parts (split-string host ":" t))
+              (case-fold-search t))
+          (string-match (concat (car parts) ":\\(" (cadr parts) "\\)/") url)
           (setq host (car parts)
-                path (concat (cadr parts) "/" path))))
+                path (concat (match-string 1 url) "/" path))))
 
       ;; Fix-up Azure SSH URLs
       (when (string= "ssh.dev.azure.com" host)
@@ -371,9 +375,9 @@ return (FILENAME . REVISION) otherwise nil."
                     "\\1/\\2/_git/\\3"
                     path)))
       (when (string= "vs-ssh.visualstudio.com" host)
-        (setq host (concat (url-user url) ".visualstudio.com"))
+        (setq host (concat (url-user parsed) ".visualstudio.com"))
         (setq path (replace-regexp-in-string
-                    (concat "^v3/" (url-user url) "/\\([^/]+\\)/")
+                    (concat "^v3/" (url-user parsed) "/\\([^/]+\\)/")
                     "\\1/_git/"
                     path)))
 
@@ -473,7 +477,7 @@ return (FILENAME . REVISION) otherwise nil."
 	  commit))
 
 (defun git-link-commit-azure (hostname dirname commit)
-  (format "https://%s/%s/commit/%s"
+ (format "https://%s/%s/commit/%s"
 	  hostname
 	  dirname
 
