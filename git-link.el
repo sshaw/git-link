@@ -35,6 +35,10 @@
 
 ;;; Change Log:
 
+;; 2020-11-23 - v0.8.1
+;; * Fix URL casing (Issue #57)
+;; * Fix byte-compile warnings (Issue #75 thanks Brian Leung)
+;;
 ;; 2020-07-21 - v0.8.0
 ;; * Add `-' prefix argument to git-link to generate links without line numbers
 ;; * Add git-link-use-single-line-number
@@ -338,7 +342,7 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link--parse-remote (url)
   "Parse URL and return a list as (HOST DIR).  DIR has no leading slash or `git' extension."
-  (let (host path)
+  (let (host path parsed)
     (unless (string-match "^[a-zA-Z0-9]+://" url)
       (setq url (concat "ssh://" url)))
 
