@@ -394,6 +394,13 @@ return (FILENAME . REVISION) otherwise nil."
                     "\\1/_git/"
                     path)))
 
+      ;; For Savannah
+      (when (string= "git.savannah.gnu.org" host)
+        (cond
+         ((string-match "\\`git/" path)
+          (setq path (substring path 4)))
+         ((string-match "\\`srv/git/" path)
+          (setq path (substring path 8)))))
 
       (list host path))))
 
