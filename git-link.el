@@ -200,6 +200,7 @@ See its docs."
     ("gitorious" git-link-gitorious)
     ("gitlab" git-link-gitlab)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-savannah)
+    ("opendev.org" git-link-opendev)
     ("visualstudio\\|azure" git-link-azure)
     ("sourcegraph" git-link-sourcegraph))
   "Alist of host names and functions creating file links for those.
@@ -219,6 +220,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("gitorious" git-link-commit-gitorious)
     ("gitlab" git-link-commit-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-commit-savannah)
+    ("opendev" git-link-commit-github)
     ("visualstudio\\|azure" git-link-commit-azure)
     ("sourcegraph" git-link-commit-sourcegraph))
   "Alist of host names and functions creating commit links for those.
@@ -546,6 +548,18 @@ return (FILENAME . REVISION) otherwise nil."
 	  hostname
 	  dirname
 	  commit))
+
+(defun git-link-opendev (hostname dirname filename branch commit start end)
+  (format "https://%s/%s/src/branch/%s/%s"
+	  hostname
+	  dirname
+	  (or branch commit)
+	  (concat filename
+                  (when start
+                    (concat "#"
+                            (if end
+                                (format "L%s-L%s" start end)
+                              (format "L%s" start)))))))
 
 (defun git-link-savannah (hostname dirname filename branch commit start _end)
   (format "https://%s/cgit/%s.git/tree/%s?h=%s"

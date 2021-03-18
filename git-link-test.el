@@ -46,6 +46,9 @@
   (should (equal '("dev.azure.com" "r-darwish/project/_git/repo")
                  (git-link--parse-remote "https://r-darwish@dev.azure.com/r-darwish/project/_git/repo")))
 
+  (should (equal '("opendev.org" "openstack/nova")
+                 (git-link--parse-remote "https://opendev.org/openstack/nova")))
+
   (should (equal '("git.sv.gnu.org" "emacs")
                  (git-link--parse-remote "git://git.sv.gnu.org/emacs.git")))
 

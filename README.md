@@ -79,6 +79,7 @@ Name of the remote branch to link to.
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
 * [Gitorious](http://gitorious.org)
+* [Opendev](https://opendev.org)
 * [Savannah](https://git.savannah.gnu.org/cgit)
 * [Sourcegraph](https://sourcegraph.com)
 * [sourcehut](https://sourcehut.org)
