@@ -330,7 +330,7 @@ return (FILENAME . REVISION) otherwise nil."
 (defvar magit-buffer-file-name)
 
 (defun git-link--relative-filename ()
-  (let* ((filename (buffer-file-name))
+  (let* ((filename (buffer-file-name (buffer-base-buffer)))
 	 (dir      (git-link--repo-root)))
 
     (when (null filename)
