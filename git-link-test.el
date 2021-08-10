@@ -31,6 +31,9 @@
   (should (equal '("gitlab.com" "weshmashian/emacs.d")
                  (git-link--parse-remote "https://gitlab.com/weshmashian/emacs.d")))
 
+  (should (equal '("codeberg.org" "takeonrules/emacs.d")
+                 (git-link--parse-remote "https://codeberg.org/takeonrules/emacs.d")))
+
   (should (equal '("foo-bar.github.com" "sshaw/foo/x")
                  (git-link--parse-remote "https://user:password@foo-bar.github.com/sshaw/foo/x.git")))
 
