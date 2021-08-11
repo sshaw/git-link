@@ -233,6 +233,25 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :type '(alist :key-type string :value-type (group function))
   :group 'git-link)
 
+(defcustom git-link-homepage-remote-alist
+  '(("git.sr.ht" git-link-homepage-github)
+    ("github" git-link-homepage-github)
+    ("bitbucket" git-link-homepage-bitbucket)
+    ("gitorious" git-link-homepage-github)
+    ("gitlab" git-link-homepage-github)
+    ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-svannah)
+    ("visualstudio\\|azure" git-link-homepage-github)
+    ("sourcegraph" git-link-homepage-github))
+  "Alist of host names and functions creating homepage links for those.
+Each element looks like (REGEXP FUNCTION) where REGEXP is used to
+match the remote's host name and FUNCTION is used to generate a link
+to the commit on remote host.
+
+As an example, \"gitlab\" will match with both \"gitlab.com\" and
+\"gitlab.example.com\"."
+  :type '(alist :key-type string :value-type (group function))
+  :group 'git-link)
+
 (defun git-link--exec(&rest args)
   (ignore-errors
     (with-temp-buffer
@@ -610,6 +629,16 @@ return (FILENAME . REVISION) otherwise nil."
             dir-file-name
             commit)))
 
+(defun git-link-homepage-github (hostname dirname)
+  (format "https://%s/%s"
+	  hostname
+	  dirname))
+
+(defun git-link-homepage-svannah (hostname dirname)
+  (format "https://%s/cgit/%s.git/"
+	  hostname
+	  dirname))
+
 (defun git-link--select-remote ()
   (if current-prefix-arg
       (git-link--read-remote)
@@ -709,23 +738,30 @@ Defaults to \"origin\"."
 
 ;;;###autoload
 (defun git-link-homepage (remote)
-  "Create a URL for the current buffer's REMOTE repository homepage.
-The URL will be added to the kill ring.  If `git-link-open-in-browser'
-is non-nil also call `browse-url'."
+  "Create a URL representing the homepage of the current
+buffer's GitHub/Bitbucket/GitLab/... repository. The
+URL will be added to the kill ring.
+
+With a prefix argument prompt for the remote's name.
+Defaults to \"origin\"."
 
   (interactive (list (git-link--select-remote)))
-  (let* ((remote-url (git-link--remote-url remote))
-         (remote-info (when remote-url (git-link--parse-remote remote-url)))
-         (base (car remote-info)))
+  (let* (handler remote-info (remote-url (git-link--remote-url remote)))
+    (if (null remote-url)
+        (message "Remote `%s' not found" remote)
 
-    ;; For Savannah
-    (when (string-match "gnu\\.org\\'" base)
-      (setq base (concat base  "/cgit")))
+      (setq remote-info (git-link--parse-remote remote-url)
+            handler (git-link--handler git-link-homepage-remote-alist (car remote-info)))
 
-    (if remote-info
-	;;TODO: shouldn't assume https, need service specific handler like others
-	(git-link--new (format "https://%s/%s" base (cadr remote-info)))
-      (error  "Remote `%s' is unknown or contains an unsupported URL" remote))))
+      (cond ((null (car remote-info))
+             (message "Remote `%s' contains an unsupported URL" remote))
+            ((not (functionp handler))
+             (message "No handler for %s" (car remote-info)))
+            ;; null ret val
+            ((git-link--new
+              (funcall handler
+                       (car remote-info)
+                       (cadr remote-info))))))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
