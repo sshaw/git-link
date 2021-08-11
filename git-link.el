@@ -235,8 +235,11 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   '(("git.sr.ht" git-link-homepage-github)
     ("github" git-link-homepage-github)
     ("bitbucket" git-link-homepage-bitbucket)
+    ("gitorious" git-link-homepage-github)
     ("gitlab" git-link-homepage-github)
-    ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-svannah))
+    ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-svannah)
+    ("visualstudio\\|azure" git-link-homepage-github)
+    ("sourcegraph" git-link-homepage-github))
   "Alist of host names and functions creating homepage links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
