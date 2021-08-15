@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2020 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.8.3
+;; Version: 0.8.4
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,10 @@
 
 ;;; Change Log:
 
+;; 2020-01-20 - v0.8.4
+;; * Add support for Codeberg (thanks Jeremy Friesen)
+;; * Add git-link-homepage-remote-alist (thanks Wim Van Deun)
+;;
 ;; 2020-01-20 - v0.8.3
 ;; * Add support for Savannah
 ;;

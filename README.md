@@ -76,6 +76,7 @@ Name of the remote branch to link to.
 
 * [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
 * [Bitbucket](http://bitbucket.com)
+* [Codeberg](https://codeberg.org/)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
 * [Gitorious](http://gitorious.org)
