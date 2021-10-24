@@ -643,6 +643,9 @@ return (FILENAME . REVISION) otherwise nil."
 	  hostname
 	  dirname))
 
+(define-obsolete-function-alias
+  'git-link-homepage-svannah 'git-link-homepage-savannah "cf947f9")
+
 (defun git-link--select-remote ()
   (if current-prefix-arg
       (git-link--read-remote)
