@@ -243,7 +243,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("bitbucket" git-link-homepage-bitbucket)
     ("gitorious" git-link-homepage-github)
     ("gitlab" git-link-homepage-github)
-    ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-svannah)
+    ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-savannah)
     ("visualstudio\\|azure" git-link-homepage-github)
     ("sourcegraph" git-link-homepage-github))
   "Alist of host names and functions creating homepage links for those.
@@ -638,10 +638,13 @@ return (FILENAME . REVISION) otherwise nil."
 	  hostname
 	  dirname))
 
-(defun git-link-homepage-svannah (hostname dirname)
+(defun git-link-homepage-savannah (hostname dirname)
   (format "https://%s/cgit/%s.git/"
 	  hostname
 	  dirname))
+
+(define-obsolete-function-alias
+  'git-link-homepage-svannah 'git-link-homepage-savannah "cf947f9")
 
 (defun git-link--select-remote ()
   (if current-prefix-arg
