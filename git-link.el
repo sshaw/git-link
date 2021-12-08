@@ -597,8 +597,8 @@ return (FILENAME . REVISION) otherwise nil."
 	  dirname
 	  commit))
 
-(defun git-link-savannah (hostname dirname filename branch commit start _end)
-  (format "https://%s/cgit/%s.git/tree/%s?h=%s"
+(defun git-link-cgit (hostname dirname filename branch commit start _end)
+  (format "https://%s/%s/tree/%s?h=%s"
 	  hostname
 	  dirname
           filename
@@ -607,11 +607,25 @@ return (FILENAME . REVISION) otherwise nil."
            (when start
              (concat "#" (format "n%s" start))))))
 
-(defun git-link-commit-savannah (hostname dirname commit)
-  (format "http://%s/cgit/%s.git/commit/?id=%s"
+(defun git-link-commit-cgit (hostname dirname commit)
+  (format "https://%s/%s/commit/?id=%s"
 	  hostname
-	  dirname
+          dirname
 	  commit))
+
+(defun git-link-savannah (hostname dirname filename branch commit start end)
+  (git-link-cgit hostname
+                 (format "cgit/%s.git" dirname) ; unique to Savannah
+                 filename
+                 branch
+                 commit
+                 start
+                 end))
+
+(defun git-link-commit-savannah (hostname dirname commit)
+  (git-link-commit-cgit hostname
+                        (format "cgit/%s.git" dirname) ; also unique to Savannah
+                        commit))
 
 (defun git-link-sourcegraph (hostname dirname filename branch commit start end)
   (let ((line-or-range (cond ((and start end) (format "#L%s-%s" start end))
