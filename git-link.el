@@ -206,7 +206,8 @@ See its docs."
     ("gitlab" git-link-gitlab)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-savannah)
     ("visualstudio\\|azure" git-link-azure)
-    ("sourcegraph" git-link-sourcegraph))
+    ("sourcegraph" git-link-sourcegraph)
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-codecommit))
   "Alist of host names and functions creating file links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
@@ -226,7 +227,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("gitlab" git-link-commit-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-commit-savannah)
     ("visualstudio\\|azure" git-link-commit-azure)
-    ("sourcegraph" git-link-commit-sourcegraph))
+    ("sourcegraph" git-link-commit-sourcegraph)
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-commit-codecommit))
   "Alist of host names and functions creating commit links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
@@ -245,7 +247,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("gitlab" git-link-homepage-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-savannah)
     ("visualstudio\\|azure" git-link-homepage-github)
-    ("sourcegraph" git-link-homepage-github))
+    ("sourcegraph" git-link-homepage-github)
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-homepage-codecommit))
   "Alist of host names and functions creating homepage links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
@@ -426,6 +429,18 @@ return (FILENAME . REVISION) otherwise nil."
           (setq path (substring path 4)))
          ((string-match "\\`srv/git/" path)
           (setq path (substring path 8)))))
+
+      ;; For AWS CodeCommit
+      (when (string-match "git-codecommit\\.\\(.*\\)\\.amazonaws.com" host)
+        (let* ((matchp (string-match "\\([^\\.]*\\)\\.\\([^\\.]*\\)" host))
+               (region (when matchp
+                         (match-string 2 host)))
+               (domainname ".console.aws.amazon.com"))
+          (when region
+            (setq host (concat region domainname))))
+        (when (string-match "v1/repos/" path)
+          (setq path (concat "codesuite/codecommit/repositories/"
+                             (substring path 9)))))
 
       (list host path))))
 
@@ -656,6 +671,29 @@ return (FILENAME . REVISION) otherwise nil."
   (format "https://%s/cgit/%s.git/"
 	  hostname
 	  dirname))
+
+(defun git-link-codecommit (hostname
+                            dirname
+                            filename
+                            branch
+                            commit
+                            start
+                            end)
+  (format "https://%s/%s/browse/refs/heads/%s/--/%s"
+          hostname
+          dirname
+          (or branch commit)
+          (concat filename
+                  (when start
+                    (format "?lines=%s-%s"
+                            start
+                            (or end start))))))
+
+(defun git-link-commit-codecommit (hostname dirname commit)
+  (format "https://%s/%s/commit/%s" hostname dirname commit))
+
+(defun git-link-homepage-codecommit (hostname dirname)
+  (format "https://%s/%s/browse" hostname dirname))
 
 (define-obsolete-function-alias
   'git-link-homepage-svannah 'git-link-homepage-savannah "cf947f9")

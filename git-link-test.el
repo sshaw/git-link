@@ -59,4 +59,7 @@
                  (git-link--parse-remote "ssh://git.savannah.gnu.org/srv/git/emacs.git")))
 
   (should (equal '("git.savannah.gnu.org" "emacs")
-                 (git-link--parse-remote "git://git.savannah.gnu.org/emacs.git"))))
+                 (git-link--parse-remote "git://git.savannah.gnu.org/emacs.git")))
+
+  (should (equal '("us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/TestRepo")
+                 (git-link--parse-remote "ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/TestRepo"))))
