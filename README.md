@@ -75,6 +75,7 @@ Name of the remote branch to link to.
 ### Supported Services
 
 * [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
+* [AWS CodeCommit](https://aws.amazon.com/codecommit/)
 * [Bitbucket](http://bitbucket.com)
 * [Codeberg](https://codeberg.org/)
 * [GitHub](http://github.com)
