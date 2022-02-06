@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2013-2020 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.8.4
-;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, convenience
+;; Version: 0.8.5
+;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, aws, azure, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
 
@@ -35,6 +35,12 @@
 
 ;;; Change Log:
 
+;; 2022-02-06 - v0.8.5
+;; * URL escape pathnames (thanks David Ongaro)
+;; * Mark misspelled Savannah functions as obsolete (thanks Hendursaga)
+;; * Add support for AWS CodeCommit (thanks Ram Krishnan)
+;; * Add support for cgit (thanks Hendursaga)
+;;
 ;; 2020-01-20 - v0.8.4
 ;; * Add support for Codeberg (thanks Jeremy Friesen)
 ;; * Add git-link-homepage-remote-alist (thanks Wim Van Deun)
