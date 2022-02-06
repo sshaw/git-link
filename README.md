@@ -78,6 +78,7 @@ Name of the remote branch to link to.
 * [AWS CodeCommit](https://aws.amazon.com/codecommit/)
 * [Bitbucket](http://bitbucket.com)
 * [Codeberg](https://codeberg.org/)
+* [cgit](https://wiki.archlinux.org/title/Cgit)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
 * [Gitorious](http://gitorious.org)
