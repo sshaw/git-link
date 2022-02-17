@@ -759,7 +759,7 @@ Defaults to \"origin\"."
                 (funcall handler
                          (car remote-info)
                          (cadr remote-info)
-                         (url-hexify-string filename (cons ?/ url-unreserved-chars))
+                         (url-hexify-string filename (url--allowed-chars (cons ?/ url-unreserved-chars)))
                          (if (or (git-link--using-git-timemachine)
                                  (git-link--using-magit-blob-mode)
                                  vc-revison
