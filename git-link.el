@@ -251,7 +251,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 (defcustom git-link-homepage-remote-alist
   '(("git.sr.ht" git-link-homepage-github)
     ("github" git-link-homepage-github)
-    ("bitbucket" git-link-homepage-bitbucket)
+    ("bitbucket" git-link-homepage-github)
     ("gitorious" git-link-homepage-github)
     ("gitlab" git-link-homepage-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-savannah)
