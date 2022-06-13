@@ -268,6 +268,13 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :type '(alist :key-type string :value-type (group function))
   :group 'git-link)
 
+(defcustom git-link-extensions-rendered-plain '("org" "md" "rst" "adoc" "markdown" "asciidoc")
+  "List of extensions that should be rendered in plain mode, systems like
+Github, Gitlab, etc show a rendered version by default, for these extensions
+we can prevent that behaviour."
+  :type 'list
+  :group 'git-link)
+
 (defun git-link--exec(&rest args)
   (ignore-errors
     (with-temp-buffer
@@ -537,7 +544,7 @@ return (FILENAME . REVISION) otherwise nil."
 	  (or branch commit)
 	  (concat filename
                   (when start
-                    (concat "#"
+                    (concat (if (git-link--should-render-plain filename) "?plain=1#" "#")
                             (if end
                                 (format "L%s-L%s" start end)
                               (format "L%s" start)))))))
@@ -711,6 +718,13 @@ return (FILENAME . REVISION) otherwise nil."
   (if current-prefix-arg
       (git-link--read-remote)
     (git-link--remote)))
+
+(defun git-link--should-render-plain (filename)
+  "Check if the extension of the given filename belongs
+to the list of extensions which generated link should be
+shown as a plain file"
+  (let ((extension (or (file-name-extension filename) "")))
+    (member (downcase extension) git-link-extensions-rendered-plain)))
 
 ;;;###autoload
 (defun git-link (remote start end)
