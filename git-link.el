@@ -214,6 +214,7 @@ See its docs."
     ("gitorious" git-link-gitorious)
     ("gitlab" git-link-gitlab)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-savannah)
+    ("googlesource.com" git-link-googlesource)
     ("visualstudio\\|azure" git-link-azure)
     ("sourcegraph" git-link-sourcegraph)
     ("\\(amazonaws\\|amazon\\)\\.com" git-link-codecommit))
@@ -235,6 +236,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("gitorious" git-link-commit-gitorious)
     ("gitlab" git-link-commit-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-commit-savannah)
+    ("googlesource.com" git-link-commit-googlesource)
     ("visualstudio\\|azure" git-link-commit-azure)
     ("sourcegraph" git-link-commit-sourcegraph)
     ("\\(amazonaws\\|amazon\\)\\.com" git-link-commit-codecommit))
@@ -255,6 +257,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("gitorious" git-link-homepage-github)
     ("gitlab" git-link-homepage-github)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-homepage-savannah)
+    ("googlesource.com" git-link-homepage-github)
     ("visualstudio\\|azure" git-link-homepage-github)
     ("sourcegraph" git-link-homepage-github)
     ("\\(amazonaws\\|amazon\\)\\.com" git-link-homepage-codecommit))
@@ -549,6 +552,16 @@ return (FILENAME . REVISION) otherwise nil."
                                 (format "L%s-L%s" start end)
                               (format "L%s" start)))))))
 
+(defun git-link-googlesource (hostname dirname filename branch commit start end)
+  (format "https://%s/%s/+/%s/%s"
+	  hostname
+	  dirname
+	  (or branch commit)
+	  (concat filename
+                  (when start
+                    (format "#%s" start)
+                    ))))
+
 (defun git-link-azure (hostname dirname filename branch commit start end)
   (format "https://%s/%s?path=%%2F%s&version=%s&line=%s&lineEnd=%s&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
 	  hostname
@@ -576,6 +589,12 @@ return (FILENAME . REVISION) otherwise nil."
 	  hostname
 	  dirname
 	  commit))
+
+(defun git-link-commit-googlesource (hostname dirname commit)
+  (format "https://%s/%s/+/%s"
+	  hostname
+	  dirname
+          commit))
 
 (defun git-link-commit-azure (hostname dirname commit)
  (format "https://%s/%s/commit/%s"
