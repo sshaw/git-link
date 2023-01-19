@@ -191,10 +191,12 @@
   :type 'boolean
   :group 'git-link)
 
-(defcustom git-link-use-commit nil
-  "If non-nil use the latest commit's hash in the link instead of the branch name."
+(defcustom git-link-prefer-branch t
+  "If non-nil use the branch name in the link if branch exists or use commit hash."
   :type 'boolean
   :group 'git-link)
+
+(make-obsolete-variable 'git-link-use-commit 'git-link-prefer-branch "0.8.7")
 
 (defcustom git-link-use-single-line-number t
   "If t a link to a single line will always contain the line number.
@@ -799,7 +801,8 @@ Defaults to \"origin\"."
                          (if (or (git-link--using-git-timemachine)
                                  (git-link--using-magit-blob-mode)
                                  vc-revison
-                                 git-link-use-commit)
+                                 (or (null branch) (string= branch ""))
+                                 (not git-link-prefer-branch))
                              nil
                            (url-hexify-string branch))
                          commit
