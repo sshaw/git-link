@@ -20,7 +20,9 @@ Functions can be called interactively (`M-x git-link`) or via a key binding of y
 (global-set-key (kbd "C-c g l") 'git-link)
 ```
 
-With a prefix argument prompt for the remote's name. Defaults to `"origin"`.
+With a single prefix argument prompt for the remote's name. Defaults to `"origin"`.
+
+With a double prefix argument invert the value of `git-link-use-commit`.
 
 With a prefix argument of `-`, generate a link without line numbers.
 
