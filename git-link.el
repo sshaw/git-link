@@ -187,8 +187,8 @@
   :group 'git-link)
 
 (defcustom git-link-open-in-browser nil
-  "If non-nil also open link in browser via `browse-url'."
-  :type 'boolean
+  "If non-nil also open link with this `browse-url-*' function."
+  :type '(choice boolean function)
   :group 'git-link)
 
 (defcustom git-link-use-commit nil
@@ -514,7 +514,9 @@ return (FILENAME . REVISION) otherwise nil."
   (message (replace-regexp-in-string "%" "%%" link t t))
   (setq deactivate-mark t)
   (when git-link-open-in-browser
-    (browse-url link)))
+    (if (fboundp git-link-open-in-browser)
+        (funcall git-link-open-in-browser link)
+      (browse-url link))))
 
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
     (format "https://%s/%s/src/%s/%s"
