@@ -527,7 +527,7 @@ return (FILENAME . REVISION) otherwise nil."
                     (when start
                       (concat "#"
                               (if end
-                                  (format "L%s-%s" start end)
+                                  (format "L%s-L%s" start end)
                                 (format "L%s" start)))))))
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
