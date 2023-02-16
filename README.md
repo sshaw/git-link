@@ -52,7 +52,8 @@ Name of the remote branch to link to, defaults to the current branch.
 
 ##### `git-link-open-in-browser`
 
-If non-`nil` also open link in browser via `browse-url`, defaults to `nil`.
+If `t` also open the link via `browse-url`. To use an alternate function set to
+that function's symbol. Defaults to `nil`.
 
 ##### `git-link-use-commit`
 

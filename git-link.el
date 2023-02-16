@@ -194,7 +194,8 @@
   :group 'git-link)
 
 (defcustom git-link-open-in-browser nil
-  "If non-nil also open link with this `browse-url-*' function."
+  "If t also open the link via `browse-url'.  To use an alternate
+function set to that function's symbol."
   :type '(choice boolean function)
   :group 'git-link)
 
