@@ -326,7 +326,7 @@ we can prevent that behaviour."
       dir)))
 
 (defun git-link--remote-url (name)
-  (git-link--get-config (format "remote.%s.url" name)))
+  (car (git-link--exec "remote" "get-url" name)))
 
 (defun git-link--branch-remote (branch)
   (git-link--get-config (format "branch.%s.remote" branch)))
