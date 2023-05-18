@@ -242,7 +242,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("github" git-link-commit-github)
     ("bitbucket" git-link-commit-bitbucket)
     ("gitorious" git-link-commit-gitorious)
-    ("gitlab" git-link-commit-github)
+    ("gitlab" git-link-commit-gitlab)
     ("git\\.\\(sv\\|savannah\\)\\.gnu\\.org" git-link-commit-savannah)
     ("googlesource.com" git-link-commit-googlesource)
     ("visualstudio\\|azure" git-link-commit-azure)
@@ -539,7 +539,7 @@ return (FILENAME . REVISION) otherwise nil."
                                 (format "L%s" start)))))))
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/blob/%s/%s"
+  (format "https://%s/%s/-/blob/%s/%s"
 	  hostname
 	  dirname
 	  (or branch commit)
@@ -593,6 +593,11 @@ return (FILENAME . REVISION) otherwise nil."
                                 (format "L%s-%s" start end)
                               (format "L%s" start)))))))
 
+(defun git-link-commit-gitlab (hostname dirname commit)
+  (format "https://%s/%s/-/commit/%s"
+	  hostname
+	  dirname
+	  commit))
 
 (defun git-link-commit-github (hostname dirname commit)
   (format "https://%s/%s/commit/%s"
