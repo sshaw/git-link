@@ -197,6 +197,15 @@
   :type 'string
   :group 'git-link)
 
+(defcustom git-link-branch-permalinks nil
+  "When creating a link to a line in a branch (i.e. `git-link-use-commit' is
+nil) create a permalink.
+
+i.e. create a link to the commit which that branch currently
+references on your local machine."
+  :type 'boolean
+  :group 'git-link)
+
 (defcustom git-link-open-in-browser nil
   "If t also open the link via `browse-url'.  To use an alternate
 function set to that function's symbol."
@@ -348,11 +357,14 @@ we can prevent that behaviour."
 (declare-function magit-rev-branch "ext:magit-git")
 
 (defun git-link--branch ()
-  (or (git-link--get-config "git-link.branch")
-      git-link-default-branch
-      (when (git-link--using-magit-blob-mode)
-        (magit-rev-branch magit-buffer-revision))
-      (git-link--current-branch)))
+  (let ((branch (or (git-link--get-config "git-link.branch")
+                    git-link-default-branch
+                    (when (git-link--using-magit-blob-mode)
+                      (magit-rev-branch magit-buffer-revision))
+                    (git-link--current-branch))))
+    (if git-link-branch-permalinks
+        (car (git-link--exec "rev-parse" branch))
+      branch)))
 
 (defun git-link--remote ()
   (let* ((branch (git-link--current-branch))
