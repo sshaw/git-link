@@ -55,6 +55,10 @@ Name of the remote branch to link to, defaults to the current branch.
 If `t` also open the link via `browse-url`. To use an alternate function set to
 that function's symbol. Defaults to `nil`.
 
+##### `git-link-http-link`
+
+If `t` use http instead of https in the link. Defaults to `nil`.
+
 ##### `git-link-use-commit`
 
 If non-`nil` use the latest commit's hash in the link instead of the branch name, defaults to `nil`.
@@ -109,7 +113,7 @@ by [setting `sourcegraph` as the default remote](#settings).
 **Note** that the remote can be named anything but its URL's host must match what's in the associated link function's alist.
 This defaults to `"sourcegraph"` but can be changed. See [Building Links and Adding Services](#building-links-and-adding-services).
 
-URLs with ports or an http scheme will not work. It's a trivial fix so if it's a problem for you please open an issue.
+URLs with ports will not work. It's a trivial fix so if it's a problem for you please open an issue.
 
 ### Building Links and Adding Services
 

@@ -66,3 +66,19 @@
 
   (should (equal '("go.googlesource.com" "go")
                  (git-link--parse-remote "https://go.googlesource.com/go"))))
+
+(ert-deftest git-link--parse-remote-http-test ()
+  ;; test https (defaults)
+  (should (equal "https"
+                 (git-link--link-type)))
+
+  (should (equal "https://hostname/dirname/blob/branch/filename#L7-L11"
+		 (git-link-github "hostname" "dirname" "filename" "branch" "commit" 7 11)))
+
+  ;; test http
+  (setq git-link-http-link t)
+  (should (equal "http"
+		 (git-link--link-type)))
+
+  (should (equal "http://hostname/dirname/blob/branch/filename#L7-L11"
+		 (git-link-github "hostname" "dirname" "filename" "branch" "commit" 7 11))))
