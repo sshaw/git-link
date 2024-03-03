@@ -35,6 +35,10 @@
 
 ;;; Change Log:
 
+;; 2024-03-03 - v0.9.1
+;; * Add support for remote host resolution via ssh config (thanks Sibi Prabakaran)
+;; * Regexp escape parts when extracting host from scp-like URLs (thanks Sibi Prabakaran)
+;;
 ;; 2023-02-15 - v0.9.0
 ;; * Add support for GoogleSource (thanks Peter Becich)
 ;; * Add plain=1 to force showing a non rendered GitHub links (thanks Erick Navarro)
@@ -215,7 +219,7 @@ See its docs."
   :group 'git-link)
 
 (defcustom git-link-consider-ssh-config nil
-  "Consider ssh configuration file for resolving hostnames."
+  "Consider ssh configuration file for resolving the remote's hostname."
   :type 'boolean
   :group 'git-link)
 
