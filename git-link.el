@@ -203,6 +203,11 @@ function set to that function's symbol."
   :type '(choice boolean function)
   :group 'git-link)
 
+(defcustom git-link-http-link nil
+  "If t use http instead of https in the link."
+  :type '(choice boolean function)
+  :group 'git-link)
+
 (defcustom git-link-use-commit nil
   "If non-nil use the latest commit's hash in the link instead of the branch name."
   :type 'boolean
@@ -294,6 +299,11 @@ Github, Gitlab, etc show a rendered version by default, for these extensions
 we can prevent that behaviour."
   :type 'list
   :group 'git-link)
+
+(defun git-link--link-type ()
+  (if git-link-http-link
+      "http"
+    "https"))
 
 (defun git-link--exec(&rest args)
   (ignore-errors
@@ -551,7 +561,8 @@ return (FILENAME . REVISION) otherwise nil."
       (browse-url link))))
 
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
-    (format "https://%s/%s/src/%s/%s"
+    (format "%s://%s/%s/src/%s/%s"
+            (git-link--link-type)
 	    hostname
 	    dirname
 	    (or branch commit)
@@ -563,7 +574,8 @@ return (FILENAME . REVISION) otherwise nil."
                                 (format "L%s" start)))))))
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/-/blob/%s/%s"
+  (format "%s://%s/%s/-/blob/%s/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  (or branch commit)
@@ -575,7 +587,8 @@ return (FILENAME . REVISION) otherwise nil."
                               (format "L%s" start)))))))
 
 (defun git-link-github (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/blob/%s/%s"
+  (format "%s://%s/%s/blob/%s/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  (or branch commit)
@@ -587,7 +600,8 @@ return (FILENAME . REVISION) otherwise nil."
                               (format "L%s" start)))))))
 
 (defun git-link-googlesource (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/+/%s/%s"
+  (format "%s://%s/%s/+/%s/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  (or branch commit)
@@ -597,7 +611,8 @@ return (FILENAME . REVISION) otherwise nil."
                     ))))
 
 (defun git-link-azure (hostname dirname filename branch commit start end)
-  (format "https://%s/%s?path=%%2F%s&version=%s&line=%s&lineEnd=%s&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+  (format "%s://%s/%s?path=%%2F%s&version=%s&line=%s&lineEnd=%s&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+          (git-link--link-type)
 	  hostname
 	  dirname
       filename
@@ -606,7 +621,8 @@ return (FILENAME . REVISION) otherwise nil."
       (or end start "")))
 
 (defun git-link-sourcehut (hostname dirname filename branch commit start end)
-  (format "https://%s/%s/tree/%s/%s"
+  (format "%s://%s/%s/tree/%s/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  (or branch commit)
@@ -618,25 +634,29 @@ return (FILENAME . REVISION) otherwise nil."
                               (format "L%s" start)))))))
 
 (defun git-link-commit-gitlab (hostname dirname commit)
-  (format "https://%s/%s/-/commit/%s"
+  (format "%s://%s/%s/-/commit/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-commit-github (hostname dirname commit)
-  (format "https://%s/%s/commit/%s"
+  (format "%s://%s/%s/commit/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-commit-googlesource (hostname dirname commit)
-  (format "https://%s/%s/+/%s"
+  (format "%s://%s/%s/+/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
           commit))
 
 (defun git-link-commit-azure (hostname dirname commit)
- (format "https://%s/%s/commit/%s"
+ (format "%s://%s/%s/commit/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 
@@ -644,13 +664,15 @@ return (FILENAME . REVISION) otherwise nil."
       (car (git-link--exec "rev-parse" commit))))
 
 (defun git-link-commit-codeberg (hostname dirname commit)
-    (format "https://%s/%s/commit/%s"
+    (format "%s://%s/%s/commit/%s"
+            (git-link--link-type)
 	    hostname
 	    dirname
 	    commit))
 
 (defun git-link-gitorious (hostname dirname filename _branch commit start _end)
-  (format "https://%s/%s/source/%s:%s#L%s"
+  (format "%s://%s/%s/source/%s:%s#L%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  commit
@@ -658,14 +680,16 @@ return (FILENAME . REVISION) otherwise nil."
 	  start))
 
 (defun git-link-commit-gitorious (hostname dirname commit)
-  (format "https://%s/%s/commit/%s"
+  (format "%s://%s/%s/commit/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-bitbucket (hostname dirname filename _branch commit start end)
   ;; ?at=branch-name
-  (format "https://%s/%s/src/%s/%s"
+  (format "%s://%s/%s/src/%s/%s"
+          (git-link--link-type)
           hostname
           dirname
           commit
@@ -681,13 +705,15 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
-  (format "https://%s/%s/commits/%s"
+  (format "%s://%s/%s/commits/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
 	  commit))
 
 (defun git-link-cgit (hostname dirname filename branch commit start _end)
-  (format "https://%s/%s/tree/%s?h=%s"
+  (format "%s://%s/%s/tree/%s?h=%s"
+          (git-link--link-type)
 	  hostname
 	  dirname
           filename
@@ -697,7 +723,8 @@ return (FILENAME . REVISION) otherwise nil."
              (concat "#" (format "n%s" start))))))
 
 (defun git-link-commit-cgit (hostname dirname commit)
-  (format "https://%s/%s/commit/?id=%s"
+  (format "%s://%s/%s/commit/?id=%s"
+          (git-link--link-type)
 	  hostname
           dirname
 	  commit))
@@ -722,7 +749,8 @@ return (FILENAME . REVISION) otherwise nil."
                              (t "")))
         (branch-or-commit (or branch commit))
         (dir-file-name (directory-file-name dirname)))
-    (format "https://%s/%s@%s/-/blob/%s%s"
+    (format "%s://%s/%s@%s/-/blob/%s%s"
+            (git-link--link-type)
             hostname
             dir-file-name
             branch-or-commit
@@ -731,18 +759,21 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link-commit-sourcegraph (hostname dirname commit)
   (let ((dir-file-name (directory-file-name dirname)))
-    (format "https://%s/%s/-/commit/%s"
+    (format "%s://%s/%s/-/commit/%s"
+            (git-link--link-type)
             hostname
             dir-file-name
             commit)))
 
 (defun git-link-homepage-github (hostname dirname)
-  (format "https://%s/%s"
+  (format "%s://%s/%s"
+          (git-link--link-type)
 	  hostname
 	  dirname))
 
 (defun git-link-homepage-savannah (hostname dirname)
-  (format "https://%s/cgit/%s.git/"
+  (format "%s://%s/cgit/%s.git/"
+          (git-link--link-type)
 	  hostname
 	  dirname))
 
@@ -753,7 +784,8 @@ return (FILENAME . REVISION) otherwise nil."
                             commit
                             start
                             end)
-  (format "https://%s/%s/browse/refs/heads/%s/--/%s"
+  (format "%s://%s/%s/browse/refs/heads/%s/--/%s"
+          (git-link--link-type)
           hostname
           dirname
           (or branch commit)
@@ -764,10 +796,10 @@ return (FILENAME . REVISION) otherwise nil."
                             (or end start))))))
 
 (defun git-link-commit-codecommit (hostname dirname commit)
-  (format "https://%s/%s/commit/%s" hostname dirname commit))
+  (format "%s://%s/%s/commit/%s" (git-link--link-type) hostname dirname commit))
 
 (defun git-link-homepage-codecommit (hostname dirname)
-  (format "https://%s/%s/browse" hostname dirname))
+  (format "%s://%s/%s/browse" (git-link--link-type) hostname dirname))
 
 (define-obsolete-function-alias
   'git-link-homepage-svannah 'git-link-homepage-savannah "cf947f9")
