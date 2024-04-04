@@ -885,7 +885,8 @@ Defaults to \"origin\"."
 (defun git-link-homepage (remote)
   "Create a URL representing the homepage of the current
 buffer's GitHub/Bitbucket/GitLab/... repository. The
-URL will be added to the kill ring.
+URL will be added to the kill ring. If 
+`git-link-open-in-browser' is non-nil also call `browse-url'.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
