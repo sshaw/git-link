@@ -203,6 +203,11 @@ function set to that function's symbol."
   :type '(choice boolean function)
   :group 'git-link)
 
+(defcustom git-link-add-to-kill-ring t
+  "if t also add the link to the kill-ring"
+  :type 'boolean
+  :group 'git-link)
+
 (defcustom git-link-use-commit nil
   "If non-nil use the latest commit's hash in the link instead of the branch name."
   :type 'boolean
@@ -541,14 +546,18 @@ return (FILENAME . REVISION) otherwise nil."
         (list line-start line-end)))))
 
 (defun git-link--new (link)
-  (kill-new link)
+  (if git-link-add-to-kill-ring
+      (kill-new link))
+
   ;; prevent URL escapes from being interpreted as format strings
   (message (replace-regexp-in-string "%" "%%" link t t))
   (setq deactivate-mark t)
   (when git-link-open-in-browser
     (if (fboundp git-link-open-in-browser)
         (funcall git-link-open-in-browser link)
-      (browse-url link))))
+      (browse-url link)))
+  link
+  )
 
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
     (format "https://%s/%s/src/%s/%s"
