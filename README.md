@@ -67,7 +67,7 @@ Note that `git-link` will exclude line numbers when invoked with the `-` prefix 
 
 ##### `git-link-add-to-kill-ring`
 
-If `t` the link will be added to the kill-ring, defaults to `t`a
+If `t` the link will be added to the kill-ring, defaults to `t`
 
 ##### `git-link-consider-ssh-config`
 
