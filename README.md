@@ -65,12 +65,14 @@ If `nil` line numbers are only added when the selection contains more than 1 lin
 
 Note that `git-link` will exclude line numbers when invoked with the `-` prefix argument.
 
+##### `git-link-add-to-kill-ring`
+
+If `t` the link will be added to the kill-ring, defaults to `t`a
+
 ##### `git-link-consider-ssh-config`
 
 If `t` consider ssh configuration file for resolving the remote's hostname. If there's a match (using `ssh -G`),
-the link will be generated to the matching host instead of the remote's host.
-
-Defaults to `nil`.
+the link will be generated to the matching host instead of the remote's host. Defaults to `nil`.
 
 #### Local
 
