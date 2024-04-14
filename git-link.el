@@ -176,6 +176,7 @@
 (require 'thingatpt)
 (require 'url-util)
 (require 'url-parse)
+(require 'transient)
 
 (defgroup git-link nil
   "Get the GitHub/Bitbucket/GitLab URL for a buffer location"
