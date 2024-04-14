@@ -5,7 +5,7 @@
 ;; Version: 0.9.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, aws, azure, convenience
 ;; URL: http://github.com/sshaw/git-link
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "24.3") (transient "0.4.0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -917,6 +917,41 @@ Defaults to \"origin\"."
               (funcall handler
                        (car remote-info)
                        (cadr remote-info))))))))
+
+
+(defun git-link-dispatch--action (open-in-browser)
+  (let* ((args (transient-args 'git-link-dispatch))
+         (git-link-default-branch (transient-arg-value "use_branch=" args))
+         (git-link-open-in-browser open-in-browser)
+         (git-link-use-commit (transient-arg-value "use_commit" args))
+         (git-link-use-single-line-number (not (transient-arg-value "no_line_number" args))))
+    (call-interactively #'git-link)))
+(defun git-link-dispatch--copy ()
+  (interactive)
+  (git-link-dispatch--action nil))
+(defun git-link-dispatch--open ()
+  (interactive)
+  (git-link-dispatch--action t))
+
+;;;###autoload
+(transient-define-prefix git-link-dispatch ()
+  "Git link dispatch."
+  [:description
+   "Options"
+   ("b" "Use branch" "use_branch="
+    :init-value (lambda (obj) (oset obj value git-link-default-branch))
+    :reader (lambda (prompt &rest _)
+              (completing-read prompt
+                               (remove nil (list
+                                            git-link-default-branch
+                                            (git-link--branch))))))
+   ("c" "Use commit" "use_commit")
+   ("n" "No line number" "no_line_number"
+    :if-not use-region-p)]
+  [:description
+   "Git link"
+   ("l" "Copy link" git-link-dispatch--copy)
+   ("o" "Open in browser" git-link-dispatch--open)])
 
 (provide 'git-link)
 ;;; git-link.el ends here
