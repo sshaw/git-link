@@ -920,35 +920,95 @@ Defaults to \"origin\"."
                        (cadr remote-info))))))))
 
 
-(defun git-link-dispatch--action (open-in-browser)
+(defun git-link-dispatch--action ()
+  "Finally call `git-link' with transient arguments."
   (let* ((args (transient-args 'git-link-dispatch))
-         (git-link-default-branch (transient-arg-value "use_branch=" args))
-         (git-link-open-in-browser open-in-browser)
+         (git-link-default-branch (transient-arg-value "branch=" args))
+         (git-link-default-remote (transient-arg-value "remote=" args))
          (git-link-use-commit (transient-arg-value "use_commit" args))
-         (git-link-use-single-line-number (not (transient-arg-value "no_line_number" args))))
+         (git-link-use-single-line-number (transient-arg-value "line_number" args)))
     (call-interactively #'git-link)))
+
 (defun git-link-dispatch--copy ()
+  "The copy command in transient suffix."
   (interactive)
-  (git-link-dispatch--action nil))
+  (let ((git-link-open-in-browser nil)
+        (git-link-add-to-kill-ring t))
+    (git-link-dispatch--action)))
+
 (defun git-link-dispatch--open ()
+  "The open command in transient suffix."
   (interactive)
-  (git-link-dispatch--action t))
+  (let ((git-link-open-in-browser t))
+    (git-link-dispatch--action)))
+
+(defclass git-link--transient-bare-option (transient-option) ()
+  "Similar to `transient-option', but format without argument string.")
+
+(cl-defmethod transient-format ((obj git-link--transient-bare-option))
+  (format " %s %s (%s)"
+          (transient-format-key obj)
+          (transient-format-description obj)
+          (let ((v (oref obj value)))
+            (if (> (length v) 0)
+                (propertize v 'face 'transient-value)
+              (propertize "default" 'face 'transient-inactive-value)))))
+
+(defclass git-link--transient-bare-switch (transient-switch) ()
+  "Similar to `transient-switch', but format without argument string, only yes/no.")
+
+(cl-defmethod transient-format ((obj git-link--transient-bare-switch))
+  (format " %s %s (%s)"
+          (transient-format-key obj)
+          (transient-format-description obj)
+          (if (oref obj value)
+              (propertize "on" 'face 'transient-value)
+            (propertize "off" 'face 'transient-inactive-value))))
+
+(transient-define-infix git-link-dispatch--branch ()
+  :class git-link--transient-bare-option
+  :argument "branch="
+  :description "Branch"
+  :prompt "Branch: "
+  :key "b"
+  :init-value (lambda (obj) (oset obj value git-link-default-branch))
+  :reader (lambda (prompt &rest _)
+            (completing-read
+             prompt
+             (remove nil (list git-link-default-branch (git-link--branch))))))
+
+(transient-define-infix git-link-dispatch--remote ()
+  :class git-link--transient-bare-option
+  :argument "remote="
+  :description "Remote"
+  :key "r"
+  :init-value (lambda (obj) (oset obj value git-link-default-remote))
+  :reader (lambda (&rest _) (git-link--read-remote)))
+
+(transient-define-infix git-link-dispatch--use-commit ()
+  :class git-link--transient-bare-switch
+  :argument "use_commit"
+  :init-value (lambda (obj) (oset obj value git-link-use-commit))
+  :description "Use commit"
+  :key "c")
+
+(transient-define-infix git-link-dispatch--line-number ()
+  :class git-link--transient-bare-switch
+  :argument "line_number"
+  :description "Line number"
+  :init-value (lambda (obj) (oset obj value git-link-use-single-line-number))
+  :if-not 'use-region-p
+  :key "n")
 
 ;;;###autoload
 (transient-define-prefix git-link-dispatch ()
   "Git link dispatch."
   [:description
    "Options"
-   ("b" "Use branch" "use_branch="
-    :init-value (lambda (obj) (oset obj value git-link-default-branch))
-    :reader (lambda (prompt &rest _)
-              (completing-read prompt
-                               (remove nil (list
-                                            git-link-default-branch
-                                            (git-link--branch))))))
-   ("c" "Use commit" "use_commit")
-   ("n" "No line number" "no_line_number"
-    :if-not use-region-p)]
+   (git-link-dispatch--branch)
+   (git-link-dispatch--remote)
+   (git-link-dispatch--use-commit)
+   (git-link-dispatch--line-number)]
   [:description
    "Git link"
    ("l" "Copy link" git-link-dispatch--copy)
