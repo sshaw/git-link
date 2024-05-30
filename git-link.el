@@ -988,7 +988,8 @@ Defaults to \"origin\"."
 (transient-define-infix git-link-dispatch--use-commit ()
   :class git-link--transient-bare-switch
   :argument "use_commit"
-  :init-value (lambda (obj) (oset obj value git-link-use-commit))
+  ;; the value should be "use_commit" (the argument) or nil. not t
+  :init-value (lambda (obj) (oset obj value (and git-link-use-commit "use_commit")))
   :description "Use commit"
   :key "c")
 
@@ -996,7 +997,7 @@ Defaults to \"origin\"."
   :class git-link--transient-bare-switch
   :argument "line_number"
   :description "Line number"
-  :init-value (lambda (obj) (oset obj value git-link-use-single-line-number))
+  :init-value (lambda (obj) (oset obj value (and git-link-use-single-line-number "line_number")))
   :if-not 'use-region-p
   :key "n")
 
