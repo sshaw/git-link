@@ -893,15 +893,20 @@ Defaults to \"origin\"."
 ;;;###autoload
 (defun git-link-homepage (remote)
   "Create a URL representing the homepage of the current
-buffer's GitHub/Bitbucket/GitLab/... repository. The
-URL will be added to the kill ring. If 
-`git-link-open-in-browser' is non-nil also call `browse-url'.
+buffer's GitHub/Bitbucket/GitLab/... repository.  The URL will be
+added to the kill ring.  If `git-link-open-in-browser' is non-nil
+or if you pass the double prefix (Ctrl-u Ctrl-u), then also call
+`browse-url'.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
   (interactive (list (git-link--select-remote)))
-  (let* (handler remote-info (remote-url (git-link--remote-url remote)))
+
+  (let* (handler remote-info
+		 (remote-url (git-link--remote-url remote))
+		 (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg))))
+
     (if (null remote-url)
         (message "Remote `%s' not found" remote)
 
