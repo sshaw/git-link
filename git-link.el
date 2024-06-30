@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2013-2022 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.9.0
+;; Version: 0.9.2
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, aws, azure, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,10 @@
 
 ;;; Change Log:
 
+;; 2024-06-29 - v0.9.2
+;; * Add git-link-add-to-kill-ring to not add to kill ring (thanks Michael Hauser-Raspe)
+;; * Add prefix arg to open in browser when calling git-link-homepage (thanks Sibi Prabakaran)
+;;
 ;; 2024-03-03 - v0.9.1
 ;; * Add support for remote host resolution via ssh config (thanks Sibi Prabakaran)
 ;; * Regexp escape parts when extracting host from scp-like URLs (thanks Sibi Prabakaran)
