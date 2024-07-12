@@ -93,6 +93,7 @@ Name of the remote branch to link to.
 * [cgit](https://wiki.archlinux.org/title/Cgit)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
+* [Gitea](https://about.gitea.com/)
 * [Gitorious](http://gitorious.org)
 * [GoogleSource](https://googlesource.com)
 * [Savannah](https://git.savannah.gnu.org/cgit)

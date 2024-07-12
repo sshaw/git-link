@@ -243,7 +243,8 @@ See its docs."
     ("googlesource.com" git-link-googlesource)
     ("visualstudio\\|azure" git-link-azure)
     ("sourcegraph" git-link-sourcegraph)
-    ("\\(amazonaws\\|amazon\\)\\.com" git-link-codecommit))
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-codecommit)
+    (".*\\|git\\|.*" git-link-codeberg))
   "Alist of host names and functions creating file links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
@@ -265,7 +266,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("googlesource.com" git-link-commit-googlesource)
     ("visualstudio\\|azure" git-link-commit-azure)
     ("sourcegraph" git-link-commit-sourcegraph)
-    ("\\(amazonaws\\|amazon\\)\\.com" git-link-commit-codecommit))
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-commit-codecommit)
+    (".*\\|git\\|.*" git-link-commit-github))
   "Alist of host names and functions creating commit links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
@@ -286,7 +288,8 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
     ("googlesource.com" git-link-homepage-github)
     ("visualstudio\\|azure" git-link-homepage-github)
     ("sourcegraph" git-link-homepage-github)
-    ("\\(amazonaws\\|amazon\\)\\.com" git-link-homepage-codecommit))
+    ("\\(amazonaws\\|amazon\\)\\.com" git-link-homepage-codecommit)
+    (".*\\|git\\|.*" git-link-homepage-github))
   "Alist of host names and functions creating homepage links for those.
 Each element looks like (REGEXP FUNCTION) where REGEXP is used to
 match the remote's host name and FUNCTION is used to generate a link
