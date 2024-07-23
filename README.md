@@ -111,7 +111,7 @@ visited.
 git-link comes with functions for linking to repositories hosted by these services but, because they're self-hosted there is no default URL to match.
 To make git-link work with these you must configure your URLs to use the appropriate matching function.
 
-### cgit
+#### cgit
 
 ```el
 (eval-after-load 'git-link
@@ -122,7 +122,7 @@ To make git-link work with these you must configure your URLs to use the appropr
      '("your-cgit\\.domain\\.tld" git-link-commit-cgit))))
 ```
 
-### Gitea
+#### Gitea
 
 ```el
 (eval-after-load 'git-link
