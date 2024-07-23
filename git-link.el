@@ -599,7 +599,7 @@ return (FILENAME . REVISION) otherwise nil."
                                 (format "L%s-L%s" start end)
                               (format "L%s" start)))))))
 
-(defun git-link-googlesource (hostname dirname filename branch commit start end)
+(defun git-link-googlesource (hostname dirname filename branch commit start _end)
   (format "https://%s/%s/+/%s/%s"
 	  hostname
 	  dirname
