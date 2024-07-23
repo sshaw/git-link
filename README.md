@@ -93,6 +93,7 @@ Name of the remote branch to link to.
 * [cgit](https://wiki.archlinux.org/title/Cgit)
 * [GitHub](http://github.com)
 * [GitLab](https://gitlab.com)
+* [Gitea](https://about.gitea.com/)
 * [Gitorious](http://gitorious.org)
 * [GoogleSource](https://googlesource.com)
 * [Savannah](https://git.savannah.gnu.org/cgit)
@@ -104,6 +105,33 @@ Name of the remote branch to link to.
 If [`git-timemachine-mode`](https://codeberg.org/pidu/git-timemachine)
 is active `git-link` generates a URL for the version of the file being
 visited.
+
+### cgit and Gitea
+
+git-link comes with functions for linking to repositories hosted by these services but, because they're self-hosted there is no default URL to match.
+To make git-link work with these you must configure your URLs to use the appropriate matching function.
+
+### cgit
+
+```el
+(eval-after-load 'git-link
+ '(progn
+   (add-to-list 'git-link-remote-alist
+     '("your-cgit\\.example\\.com" git-link-cgit))
+   (add-to-list 'git-link-commit-remote-alist
+     '("your-cgit\\.domain\\.tld" git-link-commit-cgit))))
+```
+
+### Gitea
+
+```el
+(eval-after-load 'git-link
+ '(progn
+   (add-to-list 'git-link-remote-alist
+     '("your-gitea\\.example\\.com" git-link-gitea))
+   (add-to-list 'git-link-commit-remote-alist
+     '("your-gitea\\.domain\\.tld" git-link-commit-gitea))))
+```
 
 ### Sourcegraph
 

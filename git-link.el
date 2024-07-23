@@ -785,6 +785,9 @@ return (FILENAME . REVISION) otherwise nil."
 (define-obsolete-function-alias
   'git-link-homepage-svannah 'git-link-homepage-savannah "cf947f9")
 
+(defalias 'git-link-gitea 'git-link-codeberg)
+(defalias 'git-link-commit-gitea 'git-link-commit-codeberg)
+
 (defun git-link--select-remote ()
   (if (equal '(4) current-prefix-arg)
       (git-link--read-remote)
