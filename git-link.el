@@ -861,7 +861,9 @@ With a double prefix argument invert the value of
                                      (not git-link-use-commit)
                                    git-link-use-commit))
                              nil
-                           (url-hexify-string branch))
+                           (if branch
+                               (url-hexify-string branch)
+                             nil))
                          commit
                          start
                          end))))))))
