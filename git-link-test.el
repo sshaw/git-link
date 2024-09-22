@@ -65,4 +65,10 @@
                  (git-link--parse-remote "ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/TestRepo")))
 
   (should (equal '("go.googlesource.com" "go")
-                 (git-link--parse-remote "https://go.googlesource.com/go"))))
+                 (git-link--parse-remote "https://go.googlesource.com/go")))
+
+  (should (equal '("bitbucket.org" "atlassianlabs/atlascode")
+                 (git-link--parse-remote "https://bitbucket.org/atlassianlabs/atlascode.git")))
+
+  (should (equal '("bitbucket.org" "atlassianlabs/atlascode")
+                 (git-link--parse-remote "ssh://bitbucket.org:atlassianlabs/atlascode.git"))))
