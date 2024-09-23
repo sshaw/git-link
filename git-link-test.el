@@ -65,4 +65,27 @@
                  (git-link--parse-remote "ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/TestRepo")))
 
   (should (equal '("go.googlesource.com" "go")
-                 (git-link--parse-remote "https://go.googlesource.com/go"))))
+                 (git-link--parse-remote "https://go.googlesource.com/go")))
+
+  (should (equal '("bitbucket.org" "atlassianlabs/atlascode")
+                 (git-link--parse-remote "https://bitbucket.org/atlassianlabs/atlascode.git")))
+
+  (should (equal '("bitbucket.org" "atlassianlabs/atlascode")
+                 (git-link--parse-remote "ssh://bitbucket.org:atlassianlabs/atlascode.git"))))
+
+(ert-deftest git-link-bitbucket ()
+  (should (equal "https://bitbucket.org/atlassian/atlascode/annotate/a-commit-hash/README.md#README.md-1"
+                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 nil)))
+
+  (should (equal "https://bitbucket.org/atlassian/atlascode/annotate/a-commit-hash/README.md#README.md-1:33"
+                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 33)))
+
+  (should (equal "https://bitbucket.org/atlassian/atlascode/src/a-commit-hash/.gitignore#.gitignore-1:33"
+                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" ".gitignore" "_branch" "a-commit-hash" 1 33))))
+
+(ert-deftest git-link--should-render-via-bitbucket-annotate ()
+  (should (equal "annotate"
+                 (git-link--should-render-via-bitbucket-annotate "README.md")))
+
+  (should (equal "src"
+                 (git-link--should-render-via-bitbucket-annotate "a-cool-new-file.txt"))))

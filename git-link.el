@@ -304,6 +304,15 @@ we can prevent that behaviour."
   :type 'list
   :group 'git-link)
 
+;; https://support.atlassian.com/bitbucket-cloud/docs/readme-content/#Extensions-and-Languages
+(defcustom git-link-extensions-rendered-via-bitbucket-annotate '("org" "md" "mkd" "mkdn" "mdown"
+                                                                 "markdown" "text" "rst" "textile"
+                                                                 "asciidoc")
+  "List of extensions that should be rendered via annotate else
+they will actually be rendered. We can prevent that behaviour."
+  :type 'list
+  :group 'git-link)
+
 (defun git-link--exec(&rest args)
   (ignore-errors
     (with-temp-buffer
@@ -678,9 +687,10 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link-bitbucket (hostname dirname filename _branch commit start end)
   ;; ?at=branch-name
-  (format "https://%s/%s/src/%s/%s"
+  (format "https://%s/%s/%s/%s/%s"
           hostname
           dirname
+          (git-link--should-render-via-bitbucket-annotate filename)
           commit
           (if (string= "" (file-name-nondirectory filename))
               filename
@@ -799,6 +809,15 @@ to the list of extensions which generated link should be
 shown as a plain file"
   (let ((extension (or (file-name-extension filename) "")))
     (member (downcase extension) git-link-extensions-rendered-plain)))
+
+(defun git-link--should-render-via-bitbucket-annotate (filename)
+  "Check if the extension of the given filename belongs
+to the list of extensions which generated link should be
+shown via annotate in bitbucket."
+  (let ((extension (or (file-name-extension filename) "")))
+    (if (member (downcase extension) git-link-extensions-rendered-via-bitbucket-annotate)
+        "annotate"
+      "src")))
 
 ;;;###autoload
 (defun git-link (remote start end)
