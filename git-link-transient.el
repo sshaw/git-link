@@ -20,7 +20,7 @@
 ;; Transient interface (magit-like menu) for git-link.
 ;; Call `git-link-dispatch' to show the menu.
 ;;
-;; You need to have `transient' installed as a depenency.
+;; You need to have `transient' installed as a dependency.
 ;; (it's not listed as the dependency of git-link because we want it to be optional.)
 
 ;;; Code:
