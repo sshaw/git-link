@@ -110,7 +110,7 @@
   :if-not 'use-region-p
   :key "n")
 
-;;;###autoload
+;;;###autoload (autoload 'git-link-dispatch "git-link-transient" nil t)
 (transient-define-prefix git-link-dispatch ()
   "Git link dispatch."
   [:description
