@@ -148,6 +148,14 @@ This defaults to `"sourcegraph"` but can be changed. See [Building Links and Add
 
 URLs with ports or an http scheme will not work. It's a trivial fix so if it's a problem for you please open an issue.
 
+### [Emacs Transient](https://www.gnu.org/software/emacs/manual/html_mono/transient.html) Support
+
+An optional Transient interface (magit-like menu) is provided via `git-link-transient.el`. To enable you need to have
+`transient` installed as a dependency.
+
+To enable `(require 'git-link-transient)` and call `git-link-dispatch` to show the menu.
+
+
 ### Building Links and Adding Services
 
 `git-link-remote-alist` is an alist containing `(REGEXP FUNCTION)`
