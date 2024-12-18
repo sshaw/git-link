@@ -418,12 +418,14 @@ return (FILENAME . REVISION) otherwise nil."
     (when (null filename)
       (cond
        ((eq major-mode 'dired-mode)
-        (setq filename (dired-file-name-at-point)))
+        (setq filename (or (dired-file-name-at-point)
+                           default-directory)))
        ((git-link--using-magit-blob-mode)
         (setq filename magit-buffer-file-name))
-       ((and (string-match-p "^magit-" (symbol-name major-mode))
-             (fboundp 'magit-file-at-point))
-        (setq filename (magit-file-at-point)))))
+       ((string-match-p "^magit-" (symbol-name major-mode))
+        (setq filename (or (and (fboundp 'magit-file-at-point)
+                                (magit-file-at-point))
+                           default-directory)))))
 
     (if (and dir filename
              ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
@@ -861,6 +863,8 @@ With a double prefix argument invert the value of
              (message "Remote `%s' contains an unsupported URL" remote))
             ((not (functionp handler))
              (message "No handler found for %s" (car remote-info)))
+            ((equal filename "")
+             (git-link-homepage remote))
             ;; TODO: null ret val
             (t
              (let ((vc-revison (git-link--parse-vc-revision filename)))
