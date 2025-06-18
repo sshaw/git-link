@@ -89,3 +89,29 @@
 
   (should (equal "src"
                  (git-link--should-render-via-bitbucket-annotate "a-cool-new-file.txt"))))
+
+(ert-deftest git-link--parse-vc-revision-test ()
+  ;; Test vc-revision-other-window pattern (single tildes)
+  (should (equal '("/tmp/git-link-test/test.txt" . "abc123")
+                 (git-link--parse-vc-revision "/tmp/git-link-test/test.txt.~abc123~")))
+  
+  ;; Test that it returns nil for non-matching patterns
+  (should (equal nil
+                 (git-link--parse-vc-revision "/tmp/git-link-test/test.txt")))
+  
+  ;; Test that it returns nil for log-view pattern (double tildes)
+  (should (equal nil
+                 (git-link--parse-vc-revision "/tmp/git-link-test/test.txt.~~abc123~~"))))
+
+(ert-deftest git-link--parse-log-view-revision-test ()
+  ;; Test log-view-find-revision pattern (double tildes)
+  (should (equal '("/tmp/git-link-test/test.txt" . "abc123")
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt.~~abc123~~")))
+  
+  ;; Test that it returns nil for non-matching patterns
+  (should (equal nil
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt")))
+  
+  ;; Test that it returns nil for vc-revision pattern (single tildes)
+  (should (equal nil
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt.~abc123~"))))

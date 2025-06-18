@@ -425,6 +425,14 @@ return (FILENAME . REVISION) otherwise nil."
     (cons (match-string 1 filename)
           (match-string 2 filename))))
 
+(defun git-link--parse-log-view-revision (filename)
+"If FILENAME appears to be from `log-view-find-revision'
+return (FILENAME . REVISION) otherwise nil."
+  (when (and (string-match "\\(.+\\)\\.~~\\([^~]+\\)~~$" filename)
+             (file-exists-p (match-string 1 filename)))
+    (cons (match-string 1 filename)
+          (match-string 2 filename))))
+
 (defvar magit-buffer-file-name)
 
 (defun git-link--relative-filename ()
@@ -883,10 +891,14 @@ With a double prefix argument invert the value of
              (message "No handler found for %s" git-host))
             ;; TODO: null ret val
             (t
-             (let ((vc-revison (git-link--parse-vc-revision filename)))
+             (let ((vc-revison (git-link--parse-vc-revision filename))
+                   (log-view-revision (git-link--parse-log-view-revision filename)))
                (when vc-revison
                  (setq filename (car vc-revison)
                        commit   (cdr vc-revison)))
+               (when log-view-revision
+                 (setq filename (car log-view-revision)
+                       commit   (cdr log-view-revision)))
 
                (git-link--new
                 (funcall handler
@@ -896,6 +908,7 @@ With a double prefix argument invert the value of
                          (if (or (git-link--using-git-timemachine)
                                  (git-link--using-magit-blob-mode)
                                  vc-revison
+                                 log-view-revision
                                  (if (equal '(16) current-prefix-arg)
                                      (not git-link-use-commit)
                                    git-link-use-commit))
