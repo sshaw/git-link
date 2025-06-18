@@ -114,4 +114,12 @@
   
   ;; Test that it returns nil for vc-revision pattern (single tildes)
   (should (equal nil
-                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt.~abc123~"))))
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt.~abc123~")))
+  
+  ;; Test with complex hash
+  (should (equal '("/tmp/git-link-test/test.txt" . "1a2b3c4d5e6f7890abcdef")
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/test.txt.~~1a2b3c4d5e6f7890abcdef~~")))
+  
+  ;; Test that it handles filenames with dots
+  (should (equal '("/tmp/git-link-test/file.with.dots.php" . "abc123")
+                 (git-link--parse-log-view-revision "/tmp/git-link-test/file.with.dots.php.~~abc123~~"))))
