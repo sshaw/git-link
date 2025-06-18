@@ -420,10 +420,11 @@ Return nil,
 (defun git-link--parse-vc-revision (filename)
 "If FILENAME appears to be from `vc-revision-other-window'
 return (FILENAME . REVISION) otherwise nil."
-  (when (and (string-match "\\(.+\\)\\.~\\([^~]+\\)~$" filename)
-             (file-exists-p (match-string 1 filename)))
-    (cons (match-string 1 filename)
-          (match-string 2 filename))))
+  (let ((default-directory (git-link--repo-root)))
+    (when (and (string-match "\\(.+\\)\\.~\\([^~]+\\)~$" filename)
+               (file-exists-p (match-string 1 filename)))
+      (cons (match-string 1 filename)
+            (match-string 2 filename)))))
 
 (defvar magit-buffer-file-name)
 
