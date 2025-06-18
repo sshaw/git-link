@@ -426,7 +426,7 @@ return (FILENAME . REVISION) otherwise nil."
           (match-string 2 filename))))
 
 (defun git-link--parse-log-view-revision (filename)
-"If FILENAME appears to be from `log-view-find-revision'
+  "If FILENAME appears to be from `log-view-find-revision'
 return (FILENAME . REVISION) otherwise nil."
   (when (and (string-match "\\(.+\\)\\.~~\\([^~]+\\)~~$" filename)
              (file-exists-p (match-string 1 filename)))
