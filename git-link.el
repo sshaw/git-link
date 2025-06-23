@@ -450,7 +450,7 @@ return (FILENAME . REVISION) otherwise nil."
 (defun git-link--parse-remote (url)
   "Parse URL and return a list as (HOST DIR).  DIR has no leading slash or `git' extension."
   (let (host path parsed)
-    (unless (string-match "^[a-zA-Z0-9]+://" url)
+    (unless (string-match "^[a-zA-Z0-9+]+://" url)
       (setq url (concat "ssh://" url)))
 
     (setq parsed (url-generic-parse-url url)
