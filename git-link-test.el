@@ -19,6 +19,9 @@
   (should (equal '("github.com" "ruby/ruby")
                  (git-link--parse-remote "https://github.com/ruby/ruby.git")))
 
+  (should (equal '("github.com" "ruby/ruby")
+                 (git-link--parse-remote "git+ssh://git@github.com/ruby/ruby.git")))
+
   (should (equal '("github.com" "sshaw/copy-as-format")
                  (git-link--parse-remote "https://github.com:9999/sshaw/copy-as-format.git")))
 
