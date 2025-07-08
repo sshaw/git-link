@@ -208,6 +208,25 @@ The `git-link-commit` signature is:
 * `DIRNAME` directory portion of the remote
 * `COMMIT` SHA of the commit
 
+#### Configuring Custom Web Hosts
+
+If you're linking to a non-standard website, e.g., `gitlab.company.com` instead
+of `gitlab.com` you must provide a Git remote to web host mapping via
+`git-link-web-host-alist`.
+
+Elements have the form `(GIT-HOST-REGEXP . WEB-HOST)`, where `GIT-HOST-REGEXP` is a regexp matching
+the host name used by Git and `WEB-HOST` is the name of the host serving the corresponding
+web interface.
+
+For example, to link files from the remote `ssh.gitlab.company.com` to the web host `gitlab.company.com`:
+
+```el
+(eval-after-load 'git-link
+ '(progn
+   (add-to-list 'git-link-web-host-alist
+     '("ssh\\.gitlab\\.compamy\\.com" "gitlab.compamy.com"))))
+```
+
 ### See Also
 
 * [copy-as-format](https://github.com/sshaw/copy-as-format)
