@@ -589,6 +589,14 @@ return (FILENAME . REVISION) otherwise nil."
   link
   )
 
+(defun git-link--web-host (git-host)
+  "Determine the web host to use for GIT-HOST.
+
+The translation is based on `git-link-web-host-alist'. If there
+is no entry for GIT-HOST in the list, it is returned unmodified."
+  (or (assoc-default git-host git-link-web-host-alist #'string-match-p)
+      git-host))
+
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
     (format "https://%s/%s/src/%s/%s"
 	    hostname
@@ -873,8 +881,7 @@ With a double prefix argument invert the value of
             branch      (git-link--branch)
             commit      (git-link--commit)
             handler     (git-link--handler git-link-remote-alist git-host)
-            web-host    (or (assoc-default git-host git-link-web-host-alist #'string-match-p)
-                            git-host))
+            web-host    (git-link--web-host git-host))
 
       (cond ((null filename)
              (message "Can't figure out what to link to"))
@@ -918,24 +925,27 @@ With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
 
   (interactive (list (git-link--select-remote)))
-  (let* (commit handler remote-info (remote-url (git-link--remote-url remote)))
+  (let* ((remote-url (git-link--remote-url remote))
+         commit handler remote-info git-host web-host)
     (if (null remote-url)
         (message "Remote `%s' not found" remote)
 
       (setq remote-info (git-link--parse-remote remote-url)
+            git-host (car remote-info)
             commit (word-at-point)
-            handler (git-link--handler git-link-commit-remote-alist (car remote-info)))
+            handler (git-link--handler git-link-commit-remote-alist git-host)
+            web-host (git-link--web-host git-host))
 
-      (cond ((null (car remote-info))
+      (cond ((null git-host)
              (message "Remote `%s' contains an unsupported URL" remote))
             ((not (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
              (message "Point is not on a commit hash"))
             ((not (functionp handler))
-             (message "No handler for %s" (car remote-info)))
+             (message "No handler for %s" git-host))
             ;; null ret val
             ((git-link--new
               (funcall handler
-                       (car remote-info)
+                       web-host
                        (cadr remote-info)
                        (substring-no-properties commit))))))))
 
@@ -952,15 +962,17 @@ Defaults to \"origin\"."
 
   (interactive (list (git-link--select-remote)))
 
-  (let* (handler remote-info
-		 (remote-url (git-link--remote-url remote))
-		 (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg))))
+  (let* ((remote-url (git-link--remote-url remote))
+	 (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg)))
+         handler remote-info git-host web-host)
 
     (if (null remote-url)
         (message "Remote `%s' not found" remote)
 
       (setq remote-info (git-link--parse-remote remote-url)
-            handler (git-link--handler git-link-homepage-remote-alist (car remote-info)))
+            git-host (car remote-info)
+            handler (git-link--handler git-link-homepage-remote-alist git-host)
+            web-host (git-link--web-host git-host))
 
       (cond ((null (car remote-info))
              (message "Remote `%s' contains an unsupported URL" remote))
@@ -969,7 +981,7 @@ Defaults to \"origin\"."
             ;; null ret val
             ((git-link--new
               (funcall handler
-                       (car remote-info)
+                       web-host
                        (cadr remote-info))))))))
 
 (provide 'git-link)
