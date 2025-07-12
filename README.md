@@ -224,8 +224,11 @@ For example, to link files from the remote `ssh.gitlab.company.com` to the web h
 (eval-after-load 'git-link
  '(progn
    (add-to-list 'git-link-web-host-alist
-     '("ssh\\.gitlab\\.compamy\\.com" "gitlab.compamy.com"))))
+     '("ssh\\.gitlab\\.compamy\\.com" "gitlab.compamy.com")
+     '("something\\.local" "http://git.localhost.com"))))
 ```
+
+If `WEB-HOST` does not have a scheme it defaults to `"https://"`.
 
 ### See Also
 

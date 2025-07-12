@@ -325,7 +325,10 @@ This can be used when custom deployments serve SSH access and the
 web interface under different host names. For example, if Git
 uses \"ssh.gitlab.company.com\" but the web interface is at
 \"gitlab.company.com\", add
-`(\"ssh\\\\.gitlab\\\\.company\\\\.com\" . \"gitlab.company.com\")'."
+`(\"ssh\\\\.gitlab\\\\.company\\\\.com\" . \"gitlab.company.com\")'.
+By default this will create a link using the \\='https://\\=' scheme.
+If you want \\='http://\\=' instead prefix the host with it:
+`(\"ssh\\\\.gitlab\\\\.company\\\\.com\" . \"http://gitlab.company.com\")'."
   :type '(alist :key-type string :value-type string)
   :group 'git-link)
 
