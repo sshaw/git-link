@@ -363,32 +363,42 @@
               git-link-add-to-kill-ring  ; Don't add to kill ring during test
               git-link-open-in-browser)  ; Don't open browser during test
           
-          ;; Set up a real git repository
-          (shell-command "git init")
-          (shell-command "git config user.name 'Test User'")
-          (shell-command "git config user.email 'test@example.com'")
-          (shell-command "git remote add origin https://github.com/user/repo.git")
+          ;; Set up a real git repository with error checking
+          (unless (= 0 (shell-command "git init"))
+            (error "Failed to initialize git repository"))
+          (unless (= 0 (shell-command "git config user.name 'Test User'"))
+            (error "Failed to set git user name"))
+          (unless (= 0 (shell-command "git config user.email 'test@example.com'"))
+            (error "Failed to set git user email"))
+          (unless (= 0 (shell-command "git remote add origin https://github.com/user/repo.git"))
+            (error "Failed to add git remote"))
           
           ;; Create test file with content
           (with-temp-file (expand-file-name "test-file.txt" test-dir)
             (insert "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"))
           
-          ;; Add and commit the file
-          (shell-command "git add test-file.txt")
-          (shell-command "git commit -m 'Initial commit'")
+          ;; Add and commit the file with error checking
+          (unless (= 0 (shell-command "git add test-file.txt"))
+            (error "Failed to add file to git"))
+          (unless (= 0 (shell-command "git commit -m 'Initial commit'"))
+            (error "Failed to commit file"))
           
-          ;; Create a buffer visiting the file and position cursor at line 3
-          (with-current-buffer (find-file-noselect (expand-file-name "test-file.txt" test-dir))
-            (goto-char (point-min))
-            (forward-line 2) ; Move to line 3
+          ;; Get the actual current branch name instead of assuming
+          (let* ((branch-output (shell-command-to-string "git branch --show-current"))
+                 (current-branch (string-trim branch-output)))
             
-            ;; Call git-link interactively
-            (let ((result (git-link "origin" 3 nil))) ; Line 3, no end line
-              ;; Verify the result is the complete expected URL
-              (should (equal "https://github.com/user/repo/blob/master/test-file.txt#L3" result)))
-            
-            ;; Clean up buffer
-            (kill-buffer)))
+            ;; Create a buffer visiting the file and position cursor at line 3
+            (with-current-buffer (find-file-noselect (expand-file-name "test-file.txt" test-dir))
+              (goto-char (point-min))
+              (forward-line 2) ; Move to line 3
+              
+              ;; Call git-link interactively
+              (let ((result (git-link "origin" 3 nil))) ; Line 3, no end line
+                ;; Verify the result is the complete expected URL with actual branch
+                (should (equal (format "https://github.com/user/repo/blob/%s/test-file.txt#L3" current-branch) result)))
+              
+              ;; Clean up buffer
+              (kill-buffer))))
       
       ;; Clean up temporary directory
       (when (file-exists-p test-dir)
