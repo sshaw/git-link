@@ -356,39 +356,43 @@
                  (git-link-homepage-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo"))))
 
 (ert-deftest git-link-interactive-simulation ()
-  "Test interactive git-link function call with cursor at line 3."
-  (with-temp-buffer
-    ;; Set up buffer content
-    (insert "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n")
-    (goto-char (point-min))
-    (forward-line 2) ; Move to line 3
-    
-    ;; Mock git repository context
-    (let ((buffer-file-name "/tmp/test-repo/file.txt")
-          (default-directory "/tmp/test-repo/")
-          git-link-add-to-kill-ring  ; Don't add to kill ring during test
-          git-link-open-in-browser)  ; Don't open browser during test
+  "Test interactive git-link function call with cursor at line 3 using real git repo."
+  (let ((test-dir (make-temp-file "git-link-test" t)))
+    (unwind-protect
+        (let ((default-directory test-dir)
+              git-link-add-to-kill-ring  ; Don't add to kill ring during test
+              git-link-open-in-browser)  ; Don't open browser during test
+          
+          ;; Set up a real git repository
+          (shell-command "git init")
+          (shell-command "git config user.name 'Test User'")
+          (shell-command "git config user.email 'test@example.com'")
+          (shell-command "git remote add origin https://github.com/user/repo.git")
+          
+          ;; Create test file with content
+          (with-temp-file (expand-file-name "test-file.txt" test-dir)
+            (insert "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"))
+          
+          ;; Add and commit the file
+          (shell-command "git add test-file.txt")
+          (shell-command "git commit -m 'Initial commit'")
+          
+          ;; Create a buffer visiting the file and position cursor at line 3
+          (with-current-buffer (find-file-noselect (expand-file-name "test-file.txt" test-dir))
+            (goto-char (point-min))
+            (forward-line 2) ; Move to line 3
+            
+            ;; Call git-link interactively
+            (let ((result (git-link "origin" 3 nil))) ; Line 3, no end line
+              ;; Verify the result contains GitHub URL with line number
+              (should (stringp result))
+              (should (string-match-p "github\\.com" result))
+              (should (string-match-p "test-file\\.txt" result))
+              (should (string-match-p "#L3" result)))
+            
+            ;; Clean up buffer
+            (kill-buffer)))
       
-      ;; Mock git functions to return expected values
-      (cl-letf (((symbol-function 'git-link--remote-url) 
-                 (lambda (_remote) "https://github.com/user/repo.git"))
-                ((symbol-function 'git-link--relative-filename)
-                 (lambda () "file.txt"))
-                ((symbol-function 'git-link--branch)
-                 (lambda () "master"))
-                ((symbol-function 'git-link--commit)
-                 (lambda () "abc123"))
-                ((symbol-function 'git-link--repo-root)
-                 (lambda () "/tmp/test-repo"))
-                ((symbol-function 'git-link--remote)
-                 (lambda () "origin"))
-                ((symbol-function 'git-link--new)
-                 (lambda (url) url))) ; Return URL directly instead of processing it
-        
-        ;; Call git-link interactively
-        (let ((result (git-link "origin" 3 nil))) ; Line 3, no end line
-          ;; Verify the result contains GitHub URL with line number
-          (should (stringp result))
-          (should (string-match-p "github\\.com" result))
-          (should (string-match-p "file\\.txt" result))
-          (should (string-match-p "#L3" result)))))))
+      ;; Clean up temporary directory
+      (when (file-exists-p test-dir)
+        (delete-directory test-dir t)))))
