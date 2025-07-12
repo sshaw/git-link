@@ -126,6 +126,165 @@
     (should (equal "https://bitbucket.org"
                    (git-link--web-host "bitbucket.org")))))
 
+(ert-deftest git-link-github ()
+  "Test git-link-github function."
+  ;; Basic file link with branch
+  (should (equal "https://github.com/user/repo/blob/master/file.txt"
+                 (git-link-github "https://github.com" "user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://github.com/user/repo/blob/master/file.txt#L10"
+                 (git-link-github "https://github.com" "user/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://github.com/user/repo/blob/master/file.txt#L10-L20"
+                 (git-link-github "https://github.com" "user/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://github.com/user/repo/blob/abc123/file.txt"
+                 (git-link-github "https://github.com" "user/repo" "file.txt" nil "abc123" nil nil)))
+
+  ;; Test with custom scheme
+  (should (equal "http://internal.github.com/user/repo/blob/master/file.txt"
+                 (git-link-github "http://internal.github.com" "user/repo" "file.txt" "master" "abc123" nil nil))))
+
+(ert-deftest git-link-gitlab ()
+  "Test git-link-gitlab function."
+  ;; Basic file link with branch
+  (should (equal "https://gitlab.com/user/repo/-/blob/master/file.txt"
+                 (git-link-gitlab "https://gitlab.com" "user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://gitlab.com/user/repo/-/blob/master/file.txt#L10"
+                 (git-link-gitlab "https://gitlab.com" "user/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://gitlab.com/user/repo/-/blob/master/file.txt#L10-20"
+                 (git-link-gitlab "https://gitlab.com" "user/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://gitlab.com/user/repo/-/blob/abc123/file.txt"
+                 (git-link-gitlab "https://gitlab.com" "user/repo" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-codeberg ()
+  "Test git-link-codeberg function."
+  ;; Basic file link with branch
+  (should (equal "https://codeberg.org/user/repo/src/master/file.txt"
+                 (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://codeberg.org/user/repo/src/master/file.txt#L10"
+                 (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://codeberg.org/user/repo/src/master/file.txt#L10-L20"
+                 (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://codeberg.org/user/repo/src/abc123/file.txt"
+                 (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" nil "abc123" nil nil))))
+
+
+(ert-deftest git-link-savannah ()
+  "Test git-link-savannah function."
+  ;; Basic file link with branch
+  (should (equal "https://git.savannah.gnu.org/cgit/repo.git/tree/file.txt?h=master"
+                 (git-link-savannah "https://git.savannah.gnu.org" "repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://git.savannah.gnu.org/cgit/repo.git/tree/file.txt?h=master#n10"
+                 (git-link-savannah "https://git.savannah.gnu.org" "repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://git.savannah.gnu.org/cgit/repo.git/tree/file.txt?h=abc123"
+                 (git-link-savannah "https://git.savannah.gnu.org" "repo" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-googlesource ()
+  "Test git-link-googlesource function."
+  ;; Basic file link with branch
+  (should (equal "https://go.googlesource.com/go/+/master/file.txt"
+                 (git-link-googlesource "https://go.googlesource.com" "go" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://go.googlesource.com/go/+/master/file.txt#10"
+                 (git-link-googlesource "https://go.googlesource.com" "go" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://go.googlesource.com/go/+/abc123/file.txt"
+                 (git-link-googlesource "https://go.googlesource.com" "go" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-azure ()
+  "Test git-link-azure function."
+  ;; Basic file link with branch
+  (should (equal "https://dev.azure.com/project/_git/repo?path=%2Ffile.txt&version=GBmaster&line=&lineEnd=&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+                 (git-link-azure "https://dev.azure.com" "project/_git/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://dev.azure.com/project/_git/repo?path=%2Ffile.txt&version=GBmaster&line=10&lineEnd=10&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+                 (git-link-azure "https://dev.azure.com" "project/_git/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://dev.azure.com/project/_git/repo?path=%2Ffile.txt&version=GBmaster&line=10&lineEnd=20&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+                 (git-link-azure "https://dev.azure.com" "project/_git/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://dev.azure.com/project/_git/repo?path=%2Ffile.txt&version=GCabc123&line=&lineEnd=&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
+                 (git-link-azure "https://dev.azure.com" "project/_git/repo" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-sourcehut ()
+  "Test git-link-sourcehut function."
+  ;; Basic file link with branch
+  (should (equal "https://git.sr.ht/~user/repo/tree/master/file.txt"
+                 (git-link-sourcehut "https://git.sr.ht" "~user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://git.sr.ht/~user/repo/tree/master/file.txt#L10"
+                 (git-link-sourcehut "https://git.sr.ht" "~user/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://git.sr.ht/~user/repo/tree/master/file.txt#L10-20"
+                 (git-link-sourcehut "https://git.sr.ht" "~user/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://git.sr.ht/~user/repo/tree/abc123/file.txt"
+                 (git-link-sourcehut "https://git.sr.ht" "~user/repo" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-sourcegraph ()
+  "Test git-link-sourcegraph function."
+  ;; Basic file link with branch
+  (should (equal "https://sourcegraph.com/user/repo@master/-/blob/file.txt"
+                 (git-link-sourcegraph "https://sourcegraph.com" "user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://sourcegraph.com/user/repo@master/-/blob/file.txt#L10"
+                 (git-link-sourcegraph "https://sourcegraph.com" "user/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://sourcegraph.com/user/repo@master/-/blob/file.txt#L10-20"
+                 (git-link-sourcegraph "https://sourcegraph.com" "user/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://sourcegraph.com/user/repo@abc123/-/blob/file.txt"
+                 (git-link-sourcegraph "https://sourcegraph.com" "user/repo" "file.txt" nil "abc123" nil nil))))
+
+(ert-deftest git-link-codecommit ()
+  "Test git-link-codecommit function."
+  ;; Basic file link with branch
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse/refs/heads/master/--/file.txt"
+                 (git-link-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; File link with single line number
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse/refs/heads/master/--/file.txt?lines=10-10"
+                 (git-link-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo" "file.txt" "master" "abc123" 10 nil)))
+
+  ;; File link with line range
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse/refs/heads/master/--/file.txt?lines=10-20"
+                 (git-link-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo" "file.txt" "master" "abc123" 10 20)))
+
+  ;; File link with commit instead of branch
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse/refs/heads/abc123/--/file.txt"
+                 (git-link-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo" "file.txt" nil "abc123" nil nil))))
+
 (ert-deftest git-link-integration-test ()
   "Test that handler functions work with URL schemes from git-link--web-host."
 
@@ -136,3 +295,64 @@
   ;; Test GitHub handler with custom scheme
   (should (equal "http://internal.github.com/user/repo/blob/master/file.txt"
                  (git-link-github "http://internal.github.com" "user/repo" "file.txt" "master" "abc123" nil nil))))
+
+;; Tests for commit functions
+(ert-deftest git-link-commit-github ()
+  "Test git-link-commit-github function."
+  (should (equal "https://github.com/user/repo/commit/abc123"
+                 (git-link-commit-github "https://github.com" "user/repo" "abc123"))))
+
+(ert-deftest git-link-commit-bitbucket ()
+  "Test git-link-commit-bitbucket function."
+  (should (equal "https://bitbucket.org/user/repo/commits/abc123"
+                 (git-link-commit-bitbucket "https://bitbucket.org" "user/repo" "abc123"))))
+
+(ert-deftest git-link-commit-gitlab ()
+  "Test git-link-commit-gitlab function."
+  (should (equal "https://gitlab.com/user/repo/-/commit/abc123"
+                 (git-link-commit-gitlab "https://gitlab.com" "user/repo" "abc123"))))
+
+(ert-deftest git-link-commit-codeberg ()
+  "Test git-link-commit-codeberg function."
+  (should (equal "https://codeberg.org/user/repo/commit/abc123"
+                 (git-link-commit-codeberg "https://codeberg.org" "user/repo" "abc123"))))
+
+
+
+(ert-deftest git-link-commit-savannah ()
+  "Test git-link-commit-savannah function."
+  (should (equal "https://git.savannah.gnu.org/cgit/repo.git/commit/?id=abc123"
+                 (git-link-commit-savannah "https://git.savannah.gnu.org" "repo" "abc123"))))
+
+(ert-deftest git-link-commit-googlesource ()
+  "Test git-link-commit-googlesource function."
+  (should (equal "https://go.googlesource.com/go/+/abc123"
+                 (git-link-commit-googlesource "https://go.googlesource.com" "go" "abc123"))))
+
+(ert-deftest git-link-commit-sourcegraph ()
+  "Test git-link-commit-sourcegraph function."
+  (should (equal "https://sourcegraph.com/user/repo/-/commit/abc123"
+                 (git-link-commit-sourcegraph "https://sourcegraph.com" "user/repo" "abc123"))))
+
+(ert-deftest git-link-commit-codecommit ()
+  "Test git-link-commit-codecommit function."
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/commit/abc123"
+                 (git-link-commit-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo" "abc123"))))
+
+;; Tests for homepage functions
+(ert-deftest git-link-homepage-github ()
+  "Test git-link-homepage-github function."
+  (should (equal "https://github.com/user/repo"
+                 (git-link-homepage-github "https://github.com" "user/repo"))))
+
+(ert-deftest git-link-homepage-savannah ()
+  "Test git-link-homepage-savannah function."
+  (should (equal "https://git.savannah.gnu.org/cgit/repo.git/"
+                 (git-link-homepage-savannah "https://git.savannah.gnu.org" "repo"))))
+
+(ert-deftest git-link-homepage-codecommit ()
+  "Test git-link-homepage-codecommit function."
+  (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse"
+                 (git-link-homepage-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo"))))
+
+
