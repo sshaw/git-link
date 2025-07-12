@@ -255,7 +255,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   :group 'git-link)
 
 (defcustom git-link-commit-remote-alist
-  '(("git.sr.ht" git-link-commit-github)
+  '(("git.sr.ht" git-link-commit-sourcehut)
     ("codeberg.org" git-link-commit-codeberg)
     ("github" git-link-commit-github)
     ("bitbucket" git-link-commit-bitbucket)
@@ -671,6 +671,12 @@ is prepended to it."
                             (if end
                                 (format "L%s-%s" start end)
                               (format "L%s" start)))))))
+
+(defun git-link-commit-sourcehut (hostname dirname commit)
+  (format "%s/%s/commit/%s"
+	  hostname
+	  dirname
+	  commit))
 
 (defun git-link-commit-gitlab (hostname dirname commit)
   (format "%s/%s/-/commit/%s"

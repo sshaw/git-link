@@ -334,6 +334,11 @@
   (should (equal "https://sourcegraph.com/user/repo/-/commit/abc123"
                  (git-link-commit-sourcegraph "https://sourcegraph.com" "user/repo" "abc123"))))
 
+(ert-deftest git-link-commit-sourcehut ()
+  "Test git-link-commit-sourcehut function."
+  (should (equal "https://git.sr.ht/~user/repo/commit/abc123"
+                 (git-link-commit-sourcehut "https://git.sr.ht" "~user/repo" "abc123"))))
+
 (ert-deftest git-link-commit-codecommit ()
   "Test git-link-commit-codecommit function."
   (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/commit/abc123"
