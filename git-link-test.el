@@ -78,13 +78,13 @@
 
 (ert-deftest git-link-bitbucket ()
   (should (equal "https://bitbucket.org/atlassian/atlascode/annotate/a-commit-hash/README.md#README.md-1"
-                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 nil)))
+                 (git-link-bitbucket "https://bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 nil)))
 
   (should (equal "https://bitbucket.org/atlassian/atlascode/annotate/a-commit-hash/README.md#README.md-1:33"
-                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 33)))
+                 (git-link-bitbucket "https://bitbucket.org" "atlassian/atlascode" "README.md" "_branch" "a-commit-hash" 1 33)))
 
   (should (equal "https://bitbucket.org/atlassian/atlascode/src/a-commit-hash/.gitignore#.gitignore-1:33"
-                 (git-link-bitbucket "bitbucket.org" "atlassian/atlascode" ".gitignore" "_branch" "a-commit-hash" 1 33))))
+                 (git-link-bitbucket "https://bitbucket.org" "atlassian/atlascode" ".gitignore" "_branch" "a-commit-hash" 1 33))))
 
 (ert-deftest git-link--should-render-via-bitbucket-annotate ()
   (should (equal "annotate"
@@ -92,3 +92,47 @@
 
   (should (equal "src"
                  (git-link--should-render-via-bitbucket-annotate "a-cool-new-file.txt"))))
+
+(ert-deftest git-link--web-host-test ()
+  "Test git-link--web-host function with various scenarios."
+
+  ;; Test with empty alist - should return the original host
+  (let ((git-link-web-host-alist nil))
+    (should (equal "https://github.com"
+                   (git-link--web-host "github.com"))))
+
+  ;; Test with alist entry without scheme - should prepend https://
+  (let ((git-link-web-host-alist '(("github\\.com" . "web.github.com"))))
+    (should (equal "https://web.github.com"
+                   (git-link--web-host "github.com"))))
+
+  ;; Test with alist entry that already has https scheme - should use as-is
+  (let ((git-link-web-host-alist '(("ssh\\.gitlab\\.com" . "https://gitlab.com"))))
+    (should (equal "https://gitlab.com"
+                   (git-link--web-host "ssh.gitlab.com"))))
+
+  ;; Test with alist entry that has http scheme - should use as-is
+  (let ((git-link-web-host-alist '(("internal\\.git" . "http://internal.company.com"))))
+    (should (equal "http://internal.company.com"
+                   (git-link--web-host "internal.git"))))
+
+  ;; Test with alist entry that has custom scheme - should use as-is
+  (let ((git-link-web-host-alist '(("special\\.git" . "custom://special.example.com"))))
+    (should (equal "custom://special.example.com"
+                   (git-link--web-host "special.git"))))
+
+  ;; Test when no match is found - should return original host with https:// prepended
+  (let ((git-link-web-host-alist '(("gitlab\\.com" . "https://gitlab.com"))))
+    (should (equal "https://bitbucket.org"
+                   (git-link--web-host "bitbucket.org")))))
+
+(ert-deftest git-link-integration-test ()
+  "Test that handler functions work with URL schemes from git-link--web-host."
+
+  ;; Test GitHub handler with scheme-enabled hostname
+  (should (equal "https://github.com/user/repo/blob/master/file.txt"
+                 (git-link-github "https://github.com" "user/repo" "file.txt" "master" "abc123" nil nil)))
+
+  ;; Test GitHub handler with custom scheme
+  (should (equal "http://internal.github.com/user/repo/blob/master/file.txt"
+                 (git-link-github "http://internal.github.com" "user/repo" "file.txt" "master" "abc123" nil nil))))
