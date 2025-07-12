@@ -384,11 +384,8 @@
             
             ;; Call git-link interactively
             (let ((result (git-link "origin" 3 nil))) ; Line 3, no end line
-              ;; Verify the result contains GitHub URL with line number
-              (should (stringp result))
-              (should (string-match-p "github\\.com" result))
-              (should (string-match-p "test-file\\.txt" result))
-              (should (string-match-p "#L3" result)))
+              ;; Verify the result is the complete expected URL
+              (should (equal "https://github.com/user/repo/blob/master/test-file.txt#L3" result)))
             
             ;; Clean up buffer
             (kill-buffer)))
