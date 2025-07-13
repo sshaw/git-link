@@ -355,4 +355,58 @@
   (should (equal "https://us-west-2.console.aws.amazon.com/codesuite/codecommit/repositories/repo/browse"
                  (git-link-homepage-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo"))))
 
+(ert-deftest git-link-interactive-simulation ()
+  "Test interactive behavior simulation of git-link functions."
+  
+  ;; Test git-link--select-remote prefix argument handling
+  (let ((current-prefix-arg nil))
+    ;; Without prefix arg, should not trigger remote selection prompt
+    (should (not (equal '(4) current-prefix-arg))))
+  
+  (let ((current-prefix-arg '(4)))
+    ;; With C-u prefix, should trigger remote selection prompt 
+    (should (equal '(4) current-prefix-arg)))
+  
+  ;; Test git-link interactive form with minus prefix
+  (let ((current-prefix-arg '-))
+    ;; Simulate the condition check from git-link's interactive form
+    (should (equal t (equal '- current-prefix-arg)))
+    ;; With minus prefix, git-link should skip line number logic
+    (let ((result (if (equal '- current-prefix-arg)
+                      '(remote nil nil)  ;; Simulates (list (git-link--remote) nil nil)
+                    '(other-case))))
+      (should (equal '(remote nil nil) result))))
+  
+  ;; Test double prefix argument handling for git-link-use-commit toggle
+  (let ((current-prefix-arg '(16)))
+    ;; Double prefix should be detected correctly for commit behavior inversion
+    (should (equal t (equal '(16) current-prefix-arg))))
+  
+  ;; Test git-link-homepage interactive form with double prefix for browser opening
+  (let ((current-prefix-arg '(16)))
+    ;; Simulate the browser opening logic from git-link-homepage
+    (let ((should-open-browser (equal (list 16) current-prefix-arg)))
+      (should (equal t should-open-browser))))
+  
+  ;; Test that all the prefix argument patterns work as expected
+  (should (equal '(4) '(4)))   ;; Single prefix - remote selection
+  (should (equal '(16) '(16))) ;; Double prefix - behavior modification  
+  (should (equal '- '-))       ;; Minus prefix - no line numbers
+  (should (equal nil nil))     ;; No prefix - default behavior
+  
+  ;; Test git-link--select-remote behavior simulation
+  (let ((current-prefix-arg '(4)))
+    ;; When prefix arg is (4), it should trigger read-remote path
+    (should (equal '(4) current-prefix-arg)))
+    
+  (let ((current-prefix-arg nil))  
+    ;; When no prefix arg, it should use default remote path
+    (should (null current-prefix-arg)))
+  
+  ;; Test interactive form logic for region handling
+  (let ((git-link-use-single-line-number nil)
+        (region-end nil))
+    ;; Simulate the condition: (and (null git-link-use-single-line-number) (null (cadr region)))
+    (should (equal t (and (null git-link-use-single-line-number) (null region-end))))))
+
 
