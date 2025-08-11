@@ -606,16 +606,16 @@ is prepended to it."
       (concat "https://" web-host))))
 
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
-    (format "%s/%s/src/%s/%s"
-	    hostname
-	    dirname
-	    (or branch commit)
-            (concat filename
-                    (when start
-                      (concat "#"
-                              (if end
-                                  (format "L%s-L%s" start end)
-                                (format "L%s" start)))))))
+  (format "%s/%s/src/%s/%s"
+	  hostname
+	  dirname
+          (or branch (concat "commit/" commit))
+          (concat filename
+                  (when start
+                    (concat "#"
+                            (if end
+                                (format "L%s-L%s" start end)
+                              (format "L%s" start)))))))
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
   (format "%s/%s/-/blob/%s/%s"
