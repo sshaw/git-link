@@ -181,7 +181,7 @@
                  (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" "master" "abc123" 10 20)))
 
   ;; File link with commit instead of branch
-  (should (equal "https://codeberg.org/user/repo/src/abc123/file.txt"
+  (should (equal "https://codeberg.org/user/repo/src/commit/abc123/file.txt"
                  (git-link-codeberg "https://codeberg.org" "user/repo" "file.txt" nil "abc123" nil nil))))
 
 
