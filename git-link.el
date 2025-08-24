@@ -35,6 +35,9 @@
 
 ;;; Change Log:
 
+;; 2024-11-03 - v0.9.3
+;; * Add support for linking to a different branch with git-link-diffrent-branch (@dotemacs)
+;;
 ;; 2024-06-29 - v0.9.2
 ;; * Add git-link-add-to-kill-ring to not add to kill ring (thanks Michael Hauser-Raspe)
 ;; * Add prefix arg to open in browser when calling git-link-homepage (thanks Sibi Prabakaran)
@@ -851,6 +854,22 @@ shown via annotate in bitbucket."
     (if (member (downcase extension) git-link-extensions-rendered-via-bitbucket-annotate)
         "annotate"
       "src")))
+
+;;;###autoload
+(defun git-link-diffrent-branch (branch)
+  "Invoke `git-link', but with the `branch' name set to a different
+branch than the one you're currently working on."
+  (interactive "P")
+  (let* ((default-remote-branch-name "main")
+         (git-link-current-branch-setting git-link-default-branch)
+         (git-link-default-branch (if branch
+                                      (completing-read
+                                       (format "Instead of '%s' branch replace with branch: " (git-link--branch))
+                                       (magit-list-branch-names))
+                                    default-remote-branch-name)))
+    (setq current-prefix-arg nil)
+    (call-interactively 'git-link)
+    (setq git-link-default-branch git-link-current-branch-setting)))
 
 ;;;###autoload
 (defun git-link (remote start end)
