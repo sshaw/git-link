@@ -856,16 +856,18 @@ shown via annotate in bitbucket."
       "src")))
 
 ;;;###autoload
-(defun git-link-diffrent-branch (branch)
+(defun git-link-different-branch (branch)
   "Invoke `git-link', but with the `branch' name set to a different
 branch than the one you're currently working on."
   (interactive "P")
-  (let* ((default-remote-branch-name "main")
+  (let* ((default-remote-branch-name (magit-main-branch))
          (git-link-current-branch-setting git-link-default-branch)
          (git-link-default-branch (if branch
                                       (completing-read
                                        (format "Instead of '%s' branch replace with branch: " (git-link--branch))
-                                       (magit-list-branch-names))
+                                       (mapcar (lambda (branch) 
+                                                 (replace-regexp-in-string "^refs/heads/" "" branch))
+                                               (magit-list-local-branches)))
                                     default-remote-branch-name)))
     (setq current-prefix-arg nil)
     (call-interactively 'git-link)
