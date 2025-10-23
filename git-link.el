@@ -1,8 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2022 Skye Shaw and others
+;; Copyright (C) 2013-2025 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.9.2
+;; Version: 0.10.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, aws, azure, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,13 @@
 
 ;;; Change Log:
 
+;; 2025-10-23 - v0.10.0
+;; * Add: support for linking to custom web hosts (Issue #136, thanks Sebastian Poeplau)
+;; * Add: Transient menu interface (Issues #128 and #132, thanks Yikai Zhao and David Morgan)
+;; * Fix: linking under vc mode when default-directory is nil
+;; * Fix: hexification of nil branch name (Issue #127, thanks Michael Hauser-Raspe)
+;; * Fix: Codeberg permalinks (Issue #147, thanks Marty Hiatt)
+;;
 ;; 2024-06-29 - v0.9.2
 ;; * Add git-link-add-to-kill-ring to not add to kill ring (thanks Michael Hauser-Raspe)
 ;; * Add prefix arg to open in browser when calling git-link-homepage (thanks Sibi Prabakaran)
