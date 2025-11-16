@@ -356,3 +356,7 @@
                  (git-link-homepage-codecommit "https://us-west-2.console.aws.amazon.com" "codesuite/codecommit/repositories/repo"))))
 
 
+(ert-deftest git-link-homepage-codeberg ()
+  "Test git-link-homepage-codeberg function."
+  (should (equal "https://codeberg.org/user/repo"
+                 (git-link-homepage-codeberg "https://codeberg.org" "user/repo"))))
