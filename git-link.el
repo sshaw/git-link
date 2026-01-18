@@ -951,15 +951,19 @@ Defaults to \"origin\"."
     (if (null remote-url)
         (message "Remote `%s' not found" remote)
 
+      (setq commit (word-at-point))
+      (when (and (not (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
+                 (derived-mode-p 'magit-revision-mode))
+        (setq commit (magit-buffer-revision)))
+
       (setq remote-info (git-link--parse-remote remote-url)
             git-host (car remote-info)
-            commit (word-at-point)
             handler (git-link--handler git-link-commit-remote-alist git-host)
             web-host (git-link--web-host git-host))
 
       (cond ((null git-host)
              (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
+            ((not commit)
              (message "Point is not on a commit hash"))
             ((not (functionp handler))
              (message "No handler for %s" git-host))
