@@ -163,8 +163,9 @@ For example:
 <img src="./magit-revision-buffer.png" width="400" alt="magit-revision buffer demo">
 
 Here one can get a link to:
-- The commit by calling `git-link-commit` on a commit hash
 - A file by calling `git-link` on a filename or within its diff
+- The commit by calling `git-link-commit` on a commit hash or anywhere in the
+  buffer (besides filename or its diff)
 
 ### Building Links and Adding Services
 
