@@ -155,6 +155,16 @@ An optional Transient interface (magit-like menu) is provided via `git-link-tran
 
 To enable `(require 'git-link-transient)` and call `git-link-dispatch` to show the menu.
 
+### Magit Revision Buffer
+
+In a `magit-revision` buffer the generated link depends on where within the buffer a `git-link*` function is called.
+For example:
+
+<img src="./magit-revision-buffer.png" width="400" alt="magit-revision buffer demo">
+
+Here one can get a link to:
+- The commit by calling `git-link-commit` on a commit hash
+- A file by calling `git-link` on a filename or within its diff
 
 ### Building Links and Adding Services
 
