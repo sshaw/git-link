@@ -849,6 +849,9 @@ is prepended to it."
       (git-link--read-remote)
     (git-link--remote)))
 
+(defun git-link--commit-hash-p (commit)
+  (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
+
 (defun git-link--should-render-plain (filename)
   "Check if the extension of the given filename belongs
 to the list of extensions which generated link should be
@@ -951,15 +954,20 @@ Defaults to \"origin\"."
     (if (null remote-url)
         (message "Remote `%s' not found" remote)
 
+      (setq commit (word-at-point))
+      (when (and (not (git-link--commit-hash-p commit))
+                 (derived-mode-p 'magit-revision-mode)
+                 (boundp 'magit-buffer-revision))
+        (setq commit magit-buffer-revision))
+
       (setq remote-info (git-link--parse-remote remote-url)
             git-host (car remote-info)
-            commit (word-at-point)
             handler (git-link--handler git-link-commit-remote-alist git-host)
             web-host (git-link--web-host git-host))
 
       (cond ((null git-host)
              (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (string-match-p "[a-fA-F0-9]\\{7,40\\}" (or commit "")))
+            ((not (git-link--commit-hash-p commit))
              (message "Point is not on a commit hash"))
             ((not (functionp handler))
              (message "No handler for %s" git-host))
