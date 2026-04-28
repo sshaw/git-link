@@ -287,6 +287,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
 
 (defcustom git-link-homepage-remote-alist
   '(("git.sr.ht" git-link-homepage-github)
+    ("codeberg.org" git-link-homepage-codeberg)
     ("github" git-link-homepage-github)
     ("bitbucket" git-link-homepage-github)
     ("gitorious" git-link-homepage-github)
