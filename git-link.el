@@ -1,8 +1,8 @@
 ;;; git-link.el --- Get the GitHub/Bitbucket/GitLab URL for a buffer location -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2025 Skye Shaw and others
+;; Copyright (C) 2013-2026 Skye Shaw and others
 ;; Author: Skye Shaw <skye.shaw@gmail.com>
-;; Version: 0.10.0
+;; Version: 0.11.0
 ;; Keywords: git, vc, github, bitbucket, gitlab, sourcehut, aws, azure, convenience
 ;; URL: http://github.com/sshaw/git-link
 ;; Package-Requires: ((emacs "24.3"))
@@ -35,6 +35,11 @@
 
 ;;; Change Log:
 
+;; 2026-04-29 - v0.11.0
+;; * Add: forge.fedoraproject.org as a codeberg instance (Issue #150, thanks Jakub Kadlcik)
+;; * Add: magit-buffer-revision fallback when using git-link-commit in magit revision buffer (Thanks Jakub Kadlcik)
+;; * Add: codeberg.org to git-link-homepage-remote-alist (Issue #152, thanks Kyrre Havik)
+;;
 ;; 2025-10-23 - v0.10.0
 ;; * Add: support for linking to custom web hosts (Issue #136, thanks Sebastian Poeplau)
 ;; * Add: Transient menu interface (Issues #128 and #132, thanks Yikai Zhao and David Morgan)
