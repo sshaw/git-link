@@ -366,7 +366,8 @@ If you want \\='http://\\=' instead prefix the host with it:
   (git-link--exec "remote"))
 
 (defun git-link--last-commit ()
-  (car (git-link--exec "--no-pager" "log" "-n1" "--pretty=format:%H")))
+  (car (git-link--exec
+        "--no-pager" "log" "-n1" "--no-show-signature" "--pretty=format:%H")))
 
 (defvar magit-buffer-revision)
 
