@@ -902,48 +902,44 @@ With a double prefix argument invert the value of
 
   (let ((remote-url (git-link--remote-url remote))
         filename branch commit handler remote-info git-host web-host)
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host    (car remote-info)
+          filename    (git-link--relative-filename)
+          branch      (git-link--branch)
+          commit      (git-link--commit)
+          handler     (git-link--handler git-link-remote-alist git-host)
+          web-host    (git-link--web-host git-host))
+    (when (null filename)
+      (user-error "Can't figure out what to link to"))
+    (when (null git-host)
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (functionp handler))
+      (user-error "No handler found for %s" git-host))
+    (let ((vc-revison (git-link--parse-vc-revision filename)))
+      (when vc-revison
+        (setq filename (car vc-revison)
+              commit   (cdr vc-revison)))
 
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host    (car remote-info)
-            filename    (git-link--relative-filename)
-            branch      (git-link--branch)
-            commit      (git-link--commit)
-            handler     (git-link--handler git-link-remote-alist git-host)
-            web-host    (git-link--web-host git-host))
-
-      (cond ((null filename)
-             (message "Can't figure out what to link to"))
-            ((null git-host)
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (functionp handler))
-             (message "No handler found for %s" git-host))
-            ;; TODO: null ret val
-            (t
-             (let ((vc-revison (git-link--parse-vc-revision filename)))
-               (when vc-revison
-                 (setq filename (car vc-revison)
-                       commit   (cdr vc-revison)))
-
-               (git-link--new
-                (funcall handler
-                         web-host
-                         (cadr remote-info)
-                         (url-hexify-string filename (url--allowed-chars (cons ?/ url-unreserved-chars)))
-                         (if (or (git-link--using-git-timemachine)
-                                 (git-link--using-magit-blob-mode)
-                                 vc-revison
-                                 (if (equal '(16) current-prefix-arg)
-                                     (not git-link-use-commit)
-                                   git-link-use-commit))
-                             nil
-                           (if branch
-                               (url-hexify-string branch)
-                             nil))
-                         commit
-                         start
-                         end))))))))
+      (git-link--new
+       (funcall handler
+                web-host
+                (cadr remote-info)
+                (url-hexify-string filename (url--allowed-chars (cons ?/ url-unreserved-chars)))
+                (if (or (git-link--using-git-timemachine)
+                        (git-link--using-magit-blob-mode)
+                        vc-revison
+                        (if (equal '(16) current-prefix-arg)
+                            (not git-link-use-commit)
+                          git-link-use-commit))
+                    nil
+                  (if branch
+                      (url-hexify-string branch)
+                    nil))
+                commit
+                start
+                end)))))
 
 ;;;###autoload
 (defun git-link-commit (remote)
@@ -953,36 +949,33 @@ repository. The URL will be added to the kill ring.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
-
   (interactive (list (git-link--select-remote)))
   (let* ((remote-url (git-link--remote-url remote))
          commit handler remote-info git-host web-host)
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq commit (word-at-point))
+    (when (and (not (git-link--commit-hash-p commit))
+               (derived-mode-p 'magit-revision-mode)
+               (boundp 'magit-buffer-revision))
+      (setq commit magit-buffer-revision))
 
-      (setq commit (word-at-point))
-      (when (and (not (git-link--commit-hash-p commit))
-                 (derived-mode-p 'magit-revision-mode)
-                 (boundp 'magit-buffer-revision))
-        (setq commit magit-buffer-revision))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host (car remote-info)
+          handler (git-link--handler git-link-commit-remote-alist git-host)
+          web-host (git-link--web-host git-host))
 
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host (car remote-info)
-            handler (git-link--handler git-link-commit-remote-alist git-host)
-            web-host (git-link--web-host git-host))
-
-      (cond ((null git-host)
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (git-link--commit-hash-p commit))
-             (message "Point is not on a commit hash"))
-            ((not (functionp handler))
-             (message "No handler for %s" git-host))
-            ;; null ret val
-            ((git-link--new
-              (funcall handler
-                       web-host
-                       (cadr remote-info)
-                       (substring-no-properties commit))))))))
+    (when (null git-host)
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (git-link--commit-hash-p commit))
+      (user-error "Point is not on a commit hash"))
+    (when (not (functionp handler))
+      (user-error "No handler for %s" git-host))
+    (git-link--new
+     (funcall handler
+              web-host
+              (cadr remote-info)
+              (substring-no-properties commit)))))
 
 ;;;###autoload
 (defun git-link-homepage (remote)
@@ -1000,24 +993,18 @@ Defaults to \"origin\"."
   (let* ((remote-url (git-link--remote-url remote))
          (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg)))
          handler remote-info git-host web-host)
-
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
-
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host (car remote-info)
-            handler (git-link--handler git-link-homepage-remote-alist git-host)
-            web-host (git-link--web-host git-host))
-
-      (cond ((null (car remote-info))
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (functionp handler))
-             (message "No handler for %s" (car remote-info)))
-            ;; null ret val
-            ((git-link--new
-              (funcall handler
-                       web-host
-                       (cadr remote-info))))))))
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host (car remote-info)
+          handler (git-link--handler git-link-homepage-remote-alist git-host)
+          web-host (git-link--web-host git-host))
+    (when (null (car remote-info))
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (functionp handler))
+      (user-error "No handler for %s" (car remote-info)))
+    (git-link--new
+     (funcall handler web-host (cadr remote-info)))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
