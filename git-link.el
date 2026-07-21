@@ -385,7 +385,7 @@ If you want \\='http://\\=' instead prefix the host with it:
 (defun git-link--repo-root ()
   (let ((dir (car (git-link--exec "rev-parse" "--show-toplevel"))))
     (if (file-remote-p default-directory)
-	(concat (file-remote-p default-directory) dir)
+        (concat (file-remote-p default-directory) dir)
       dir)))
 
 (defun git-link--remote-url (name)
@@ -405,19 +405,19 @@ If you want \\='http://\\=' instead prefix the host with it:
 
 (defun git-link--remote ()
   (let* ((branch (git-link--current-branch))
-	 (remote (or (git-link--get-config "git-link.remote")
-		     git-link-default-remote
-		     (git-link--branch-remote branch))))
+         (remote (or (git-link--get-config "git-link.remote")
+                     git-link-default-remote
+                     (git-link--branch-remote branch))))
 
     ;; Git defaults to "." if the branch has no remote.
     ;; If the branch has no remote we try master's, which may be set.
     (if (or (null remote)
-	    (and (string= remote ".")
-		 (not (string= branch "master"))))
-	(setq remote (git-link--branch-remote "master")))
+            (and (string= remote ".")
+                 (not (string= branch "master"))))
+        (setq remote (git-link--branch-remote "master")))
 
     (if (or (null remote) (string= remote "."))
-	"origin"
+        "origin"
       remote)))
 
 (defun git-link--handler (alist str)
@@ -450,7 +450,7 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link--relative-filename ()
   (let* ((filename (buffer-file-name (buffer-base-buffer)))
-	 (dir      (git-link--repo-root)))
+         (dir      (git-link--repo-root)))
 
     (when (null filename)
       (cond
@@ -465,8 +465,8 @@ return (FILENAME . REVISION) otherwise nil."
     (if (and dir filename
              ;; Make sure filename is not above dir, e.g. "/foo/repo-root/.."
              (< (length dir) (length (file-truename filename))))
-	(substring (file-truename filename)
-		   (1+ (length dir))))))
+        (substring (file-truename filename)
+                   (1+ (length dir))))))
 
 (defun git-link--parse-remote (url)
   "Parse URL and return a list as (HOST DIR).  DIR has no leading slash or `git' extension."
@@ -501,9 +501,9 @@ return (FILENAME . REVISION) otherwise nil."
 
 
       (when git-link-consider-ssh-config
-	(let* ((ssh-resolved-host (git-link--ssh-resolve-hostname host)))
-	  (when ssh-resolved-host
-	    (setq host ssh-resolved-host))))
+        (let* ((ssh-resolved-host (git-link--ssh-resolve-hostname host)))
+          (when ssh-resolved-host
+            (setq host ssh-resolved-host))))
 
       ;; Fix-up Azure SSH URLs
       (when (string= "ssh.dev.azure.com" host)
@@ -544,10 +544,10 @@ return (FILENAME . REVISION) otherwise nil."
 (defun git-link--ssh-resolve-hostname (hostname)
   "Resolve HOSTNAME using ssh client."
   (let ((output (shell-command-to-string (format "ssh -G %s" hostname)))
-	(host nil))
+        (host nil))
     (dolist (line (split-string output "\n"))
       (when (string-match "^hostname \\(.*\\)" line)
-	(setq host (match-string 1 line))))
+        (setq host (match-string 1 line))))
     host))
 
 (defun git-link--using-git-timemachine ()
@@ -559,16 +559,16 @@ return (FILENAME . REVISION) otherwise nil."
 
 (defun git-link--read-remote ()
   (let ((remotes (git-link--remotes))
-	(current (git-link--remote)))
+        (current (git-link--remote)))
     (completing-read "Remote: "
-		     remotes
-		     nil
-		     t
-		     ""
-		     nil
-		     (if (member current remotes)
-			 current
-		       (car remotes)))))
+                     remotes
+                     nil
+                     t
+                     ""
+                     nil
+                     (if (member current remotes)
+                         current
+                       (car remotes)))))
 
 (defun git-link--get-region ()
   (save-restriction
@@ -606,8 +606,7 @@ return (FILENAME . REVISION) otherwise nil."
     (if (fboundp git-link-open-in-browser)
         (funcall git-link-open-in-browser link)
       (browse-url link)))
-  link
-  )
+  link)
 
 (defun git-link--web-host (git-host)
   "Determine the web host to use for GIT-HOST.
@@ -624,8 +623,8 @@ is prepended to it."
 
 (defun git-link-codeberg (hostname dirname filename branch commit start end)
   (format "%s/%s/src/%s/%s"
-	  hostname
-	  dirname
+          hostname
+          dirname
           (or branch (concat "commit/" commit))
           (concat filename
                   (when start
@@ -636,9 +635,9 @@ is prepended to it."
 
 (defun git-link-gitlab (hostname dirname filename branch commit start end)
   (format "%s/%s/-/blob/%s/%s"
-	  hostname
-	  dirname
-	  (or branch commit)
+          hostname
+          dirname
+          (or branch commit)
           (concat filename
                   (when start
                     (concat "#"
@@ -660,18 +659,18 @@ is prepended to it."
 
 (defun git-link-googlesource (hostname dirname filename branch commit start _end)
   (format "%s/%s/+/%s/%s"
-	  hostname
-	  dirname
-	  (or branch commit)
-	  (concat filename
+          hostname
+          dirname
+          (or branch commit)
+          (concat filename
                   (when start
                     (format "#%s" start)
                     ))))
 
 (defun git-link-azure (hostname dirname filename branch commit start end)
   (format "%s/%s?path=%%2F%s&version=%s&line=%s&lineEnd=%s&lineStartColumn=1&lineEndColumn=9999&lineStyle=plain"
-	  hostname
-	  dirname
+          hostname
+          dirname
       filename
       (concat "G" (if branch "B" "C") (or branch commit))
       (or start "")
@@ -679,10 +678,10 @@ is prepended to it."
 
 (defun git-link-sourcehut (hostname dirname filename branch commit start end)
   (format "%s/%s/tree/%s/%s"
-	  hostname
-	  dirname
-	  (or branch commit)
-	  (concat filename
+          hostname
+          dirname
+          (or branch commit)
+          (concat filename
                   (when start
                     (concat "#"
                             (if end
@@ -691,49 +690,49 @@ is prepended to it."
 
 (defun git-link-commit-gitlab (hostname dirname commit)
   (format "%s/%s/-/commit/%s"
-	  hostname
-	  dirname
-	  commit))
+          hostname
+          dirname
+          commit))
 
 (defun git-link-commit-github (hostname dirname commit)
   (format "%s/%s/commit/%s"
-	  hostname
-	  dirname
-	  commit))
+          hostname
+          dirname
+          commit))
 
 (defun git-link-commit-googlesource (hostname dirname commit)
   (format "%s/%s/+/%s"
-	  hostname
-	  dirname
+          hostname
+          dirname
           commit))
 
 (defun git-link-commit-azure (hostname dirname commit)
  (format "%s/%s/commit/%s"
-	  hostname
-	  dirname
+          hostname
+          dirname
 
       ;; Azure only supports full 32 characters SHA
       (car (git-link--exec "rev-parse" commit))))
 
 (defun git-link-commit-codeberg (hostname dirname commit)
     (format "%s/%s/commit/%s"
-	    hostname
-	    dirname
-	    commit))
+            hostname
+            dirname
+            commit))
 
 (defun git-link-gitorious (hostname dirname filename _branch commit start _end)
   (format "%s/%s/source/%s:%s#L%s"
-	  hostname
-	  dirname
-	  commit
-	  filename
-	  start))
+          hostname
+          dirname
+          commit
+          filename
+          start))
 
 (defun git-link-commit-gitorious (hostname dirname commit)
   (format "%s/%s/commit/%s"
-	  hostname
-	  dirname
-	  commit))
+          hostname
+          dirname
+          commit))
 
 (defun git-link-bitbucket (hostname dirname filename _branch commit start end)
   ;; ?at=branch-name
@@ -755,14 +754,14 @@ is prepended to it."
 (defun git-link-commit-bitbucket (hostname dirname commit)
   ;; ?at=branch-name
   (format "%s/%s/commits/%s"
-	  hostname
-	  dirname
-	  commit))
+          hostname
+          dirname
+          commit))
 
 (defun git-link-cgit (hostname dirname filename branch commit start _end)
   (format "%s/%s/tree/%s?h=%s"
-	  hostname
-	  dirname
+          hostname
+          dirname
           filename
           (concat
            (or branch commit)
@@ -771,9 +770,9 @@ is prepended to it."
 
 (defun git-link-commit-cgit (hostname dirname commit)
   (format "%s/%s/commit/?id=%s"
-	  hostname
+          hostname
           dirname
-	  commit))
+          commit))
 
 (defun git-link-savannah (hostname dirname filename branch commit start end)
   (git-link-cgit hostname
@@ -811,13 +810,13 @@ is prepended to it."
 
 (defun git-link-homepage-github (hostname dirname)
   (format "%s/%s"
-	  hostname
-	  dirname))
+          hostname
+          dirname))
 
 (defun git-link-homepage-savannah (hostname dirname)
   (format "%s/cgit/%s.git/"
-	  hostname
-	  dirname))
+          hostname
+          dirname))
 
 (defun git-link-codecommit (hostname
                             dirname
@@ -903,48 +902,44 @@ With a double prefix argument invert the value of
 
   (let ((remote-url (git-link--remote-url remote))
         filename branch commit handler remote-info git-host web-host)
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host    (car remote-info)
+          filename    (git-link--relative-filename)
+          branch      (git-link--branch)
+          commit      (git-link--commit)
+          handler     (git-link--handler git-link-remote-alist git-host)
+          web-host    (git-link--web-host git-host))
+    (when (null filename)
+      (user-error "Can't figure out what to link to"))
+    (when (null git-host)
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (functionp handler))
+      (user-error "No handler found for %s" git-host))
+    (let ((vc-revison (git-link--parse-vc-revision filename)))
+      (when vc-revison
+        (setq filename (car vc-revison)
+              commit   (cdr vc-revison)))
 
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host    (car remote-info)
-            filename    (git-link--relative-filename)
-            branch      (git-link--branch)
-            commit      (git-link--commit)
-            handler     (git-link--handler git-link-remote-alist git-host)
-            web-host    (git-link--web-host git-host))
-
-      (cond ((null filename)
-             (message "Can't figure out what to link to"))
-            ((null git-host)
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (functionp handler))
-             (message "No handler found for %s" git-host))
-            ;; TODO: null ret val
-            (t
-             (let ((vc-revison (git-link--parse-vc-revision filename)))
-               (when vc-revison
-                 (setq filename (car vc-revison)
-                       commit   (cdr vc-revison)))
-
-               (git-link--new
-                (funcall handler
-                         web-host
-                         (cadr remote-info)
-                         (url-hexify-string filename (url--allowed-chars (cons ?/ url-unreserved-chars)))
-                         (if (or (git-link--using-git-timemachine)
-                                 (git-link--using-magit-blob-mode)
-                                 vc-revison
-                                 (if (equal '(16) current-prefix-arg)
-                                     (not git-link-use-commit)
-                                   git-link-use-commit))
-                             nil
-                           (if branch
-                               (url-hexify-string branch)
-                             nil))
-                         commit
-                         start
-                         end))))))))
+      (git-link--new
+       (funcall handler
+                web-host
+                (cadr remote-info)
+                (url-hexify-string filename (url--allowed-chars (cons ?/ url-unreserved-chars)))
+                (if (or (git-link--using-git-timemachine)
+                        (git-link--using-magit-blob-mode)
+                        vc-revison
+                        (if (equal '(16) current-prefix-arg)
+                            (not git-link-use-commit)
+                          git-link-use-commit))
+                    nil
+                  (if branch
+                      (url-hexify-string branch)
+                    nil))
+                commit
+                start
+                end)))))
 
 ;;;###autoload
 (defun git-link-commit (remote)
@@ -954,36 +949,33 @@ repository. The URL will be added to the kill ring.
 
 With a prefix argument prompt for the remote's name.
 Defaults to \"origin\"."
-
   (interactive (list (git-link--select-remote)))
   (let* ((remote-url (git-link--remote-url remote))
          commit handler remote-info git-host web-host)
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq commit (word-at-point))
+    (when (and (not (git-link--commit-hash-p commit))
+               (derived-mode-p 'magit-revision-mode)
+               (boundp 'magit-buffer-revision))
+      (setq commit magit-buffer-revision))
 
-      (setq commit (word-at-point))
-      (when (and (not (git-link--commit-hash-p commit))
-                 (derived-mode-p 'magit-revision-mode)
-                 (boundp 'magit-buffer-revision))
-        (setq commit magit-buffer-revision))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host (car remote-info)
+          handler (git-link--handler git-link-commit-remote-alist git-host)
+          web-host (git-link--web-host git-host))
 
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host (car remote-info)
-            handler (git-link--handler git-link-commit-remote-alist git-host)
-            web-host (git-link--web-host git-host))
-
-      (cond ((null git-host)
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (git-link--commit-hash-p commit))
-             (message "Point is not on a commit hash"))
-            ((not (functionp handler))
-             (message "No handler for %s" git-host))
-            ;; null ret val
-            ((git-link--new
-              (funcall handler
-                       web-host
-                       (cadr remote-info)
-                       (substring-no-properties commit))))))))
+    (when (null git-host)
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (git-link--commit-hash-p commit))
+      (user-error "Point is not on a commit hash"))
+    (when (not (functionp handler))
+      (user-error "No handler for %s" git-host))
+    (git-link--new
+     (funcall handler
+              web-host
+              (cadr remote-info)
+              (substring-no-properties commit)))))
 
 ;;;###autoload
 (defun git-link-homepage (remote)
@@ -999,26 +991,20 @@ Defaults to \"origin\"."
   (interactive (list (git-link--select-remote)))
 
   (let* ((remote-url (git-link--remote-url remote))
-	 (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg)))
+         (git-link-open-in-browser (or git-link-open-in-browser (equal (list 16) current-prefix-arg)))
          handler remote-info git-host web-host)
-
-    (if (null remote-url)
-        (message "Remote `%s' not found" remote)
-
-      (setq remote-info (git-link--parse-remote remote-url)
-            git-host (car remote-info)
-            handler (git-link--handler git-link-homepage-remote-alist git-host)
-            web-host (git-link--web-host git-host))
-
-      (cond ((null (car remote-info))
-             (message "Remote `%s' contains an unsupported URL" remote))
-            ((not (functionp handler))
-             (message "No handler for %s" (car remote-info)))
-            ;; null ret val
-            ((git-link--new
-              (funcall handler
-                       web-host
-                       (cadr remote-info))))))))
+    (when (null remote-url)
+      (user-error "Remote `%s' not found" remote))
+    (setq remote-info (git-link--parse-remote remote-url)
+          git-host (car remote-info)
+          handler (git-link--handler git-link-homepage-remote-alist git-host)
+          web-host (git-link--web-host git-host))
+    (when (null (car remote-info))
+      (user-error "Remote `%s' contains an unsupported URL" remote))
+    (when (not (functionp handler))
+      (user-error "No handler for %s" (car remote-info)))
+    (git-link--new
+     (funcall handler web-host (cadr remote-info)))))
 
 (provide 'git-link)
 ;;; git-link.el ends here
