@@ -317,7 +317,7 @@ As an example, \"gitlab\" will match with both \"gitlab.com\" and
   "List of extensions that should be rendered in plain mode, systems like
 Github, Gitlab, etc show a rendered version by default, for these extensions
 we can prevent that behaviour."
-  :type 'list
+  :type '(repeat string)
   :group 'git-link)
 
 ;; https://support.atlassian.com/bitbucket-cloud/docs/readme-content/#Extensions-and-Languages
@@ -326,7 +326,7 @@ we can prevent that behaviour."
                                                                  "asciidoc")
   "List of extensions that should be rendered via annotate else
 they will actually be rendered. We can prevent that behaviour."
-  :type 'list
+  :type '(repeat string)
   :group 'git-link)
 
 (defcustom git-link-web-host-alist nil
